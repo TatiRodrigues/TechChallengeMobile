@@ -1,14 +1,18 @@
 import { Bell, LogOut } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useAuth } from '../contexts/AuthContext';
 import { colors, spacing } from '../theme/tokens';
+import type { RootStackParamList } from '../types/navigation';
 import { Brand } from './Brand';
 
 export function AppHeader() {
   const { user, logout } = useAuth();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
@@ -18,9 +22,9 @@ export function AppHeader() {
           <Bell color={colors.textMuted} size={21} />
           <View style={styles.badge} />
         </Pressable>
-        <View style={styles.avatar}>
+        <Pressable accessibilityLabel="Alterar cadastro" hitSlop={8} onPress={() => navigation.navigate('Profile')} style={styles.avatar}>
           <Text style={styles.avatarText}>{user?.name.charAt(0).toUpperCase() ?? 'U'}</Text>
-        </View>
+        </Pressable>
         <Pressable accessibilityLabel="Sair" hitSlop={10} onPress={logout} style={styles.iconButton}>
           <LogOut color={colors.danger} size={20} />
         </Pressable>
@@ -31,9 +35,9 @@ export function AppHeader() {
 
 const styles = StyleSheet.create({
   header: {
-    minHeight: 62,
+    minHeight: 70,
     paddingHorizontal: spacing.md,
-    backgroundColor: colors.surface,
+    backgroundColor: 'rgba(255,255,255,0.98)',
     borderBottomColor: colors.border,
     borderBottomWidth: 1,
     flexDirection: 'row',

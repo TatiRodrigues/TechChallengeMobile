@@ -1,7 +1,8 @@
-import { Pencil, Trash2 } from 'lucide-react-native';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, MoreVertical, Pencil, Trash2 } from 'lucide-react-native';
+import { useState } from 'react';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
-import { colors, spacing } from '../theme/tokens';
+import { colors, radius, spacing } from '../theme/tokens';
 import { Transaction, transactionTypeLabels } from '../types/transaction';
 import { AppText } from './ui/AppText';
 
@@ -20,45 +21,85 @@ function formatDate(date: Date): string {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+// Cada tipo de transação tem um ícone e cor próprios, facilitando reconhecer o
+// tipo de movimentação em uma leitura rápida da lista.
+const typeIconConfig: Record<Transaction['type'], { Icon: typeof ArrowDownLeft; color: string; background: string }> = {
+  deposito: { Icon: ArrowDownLeft, color: colors.primary, background: colors.primarySoft },
+  transferencia: { Icon: ArrowLeftRight, color: colors.info, background: '#EAF0FE' },
+  saque: { Icon: ArrowUpRight, color: colors.danger, background: '#FDECEE' },
+};
+
 export function TransactionListItem({ transaction, showDate = true, onEdit, onDelete }: TransactionListItemProps) {
+  const [menuVisible, setMenuVisible] = useState(false);
   const isExpense = transaction.type === 'saque';
   const showActions = !!onEdit || !!onDelete;
+  const { Icon, color, background } = typeIconConfig[transaction.type];
+
+  function handleEdit() {
+    setMenuVisible(false);
+    onEdit?.(transaction);
+  }
+
+  function handleDelete() {
+    setMenuVisible(false);
+    onDelete?.(transaction);
+  }
 
   return (
     <View style={styles.row}>
+      <View style={[styles.typeIcon, { backgroundColor: background }]}>
+        <Icon color={color} size={18} />
+      </View>
+
       <View style={styles.info}>
-        <AppText variant="strong">{transaction.description}</AppText>
-        <AppText color={colors.textSubtle} variant="caption">
+        <AppText numberOfLines={1} variant="strong">{transaction.description}</AppText>
+        <AppText color={colors.textSubtle} numberOfLines={1} variant="caption">
           {transactionTypeLabels[transaction.type]} · {transaction.category}
           {showDate ? ` · ${formatDate(transaction.createdAt)}` : ''}
         </AppText>
       </View>
-      <AppText style={[styles.amount, isExpense && styles.amountNegative]} variant="strong">
-        {isExpense ? '-' : '+'} {formatCurrency(transaction.amount)}
-      </AppText>
+
+      <View style={styles.trailing}>
+        <AppText style={[styles.amount, isExpense && styles.amountNegative]} variant="strong">
+          {isExpense ? '-' : '+'} {formatCurrency(transaction.amount)}
+        </AppText>
+
+        {showActions && (
+          <Pressable
+            accessibilityLabel="Mais ações"
+            hitSlop={8}
+            onPress={() => setMenuVisible(true)}
+            style={styles.menuButton}
+          >
+            <MoreVertical color={colors.textSubtle} size={18} />
+          </Pressable>
+        )}
+      </View>
+
       {showActions && (
-        <View style={styles.actions}>
-          {onEdit && (
-            <Pressable
-              accessibilityLabel="Editar transação"
-              hitSlop={8}
-              onPress={() => onEdit(transaction)}
-              style={styles.actionButton}
-            >
-              <Pencil color={colors.primary} size={18} />
-            </Pressable>
-          )}
-          {onDelete && (
-            <Pressable
-              accessibilityLabel="Excluir transação"
-              hitSlop={8}
-              onPress={() => onDelete(transaction)}
-              style={styles.actionButton}
-            >
-              <Trash2 color={colors.danger} size={18} />
-            </Pressable>
-          )}
-        </View>
+        <Modal animationType="fade" onRequestClose={() => setMenuVisible(false)} transparent visible={menuVisible}>
+          <Pressable onPress={() => setMenuVisible(false)} style={styles.menuOverlay}>
+            <View style={styles.menuCard}>
+              <AppText numberOfLines={1} style={styles.menuTitle} variant="strong">
+                {transaction.description}
+              </AppText>
+
+              {onEdit && (
+                <Pressable onPress={handleEdit} style={({ pressed }) => [styles.menuOption, pressed && styles.menuOptionPressed]}>
+                  <Pencil color={colors.primary} size={18} />
+                  <AppText style={styles.menuOptionText}>Editar</AppText>
+                </Pressable>
+              )}
+
+              {onDelete && (
+                <Pressable onPress={handleDelete} style={({ pressed }) => [styles.menuOption, pressed && styles.menuOptionPressed]}>
+                  <Trash2 color={colors.danger} size={18} />
+                  <AppText color={colors.danger} style={styles.menuOptionText}>Excluir</AppText>
+                </Pressable>
+              )}
+            </View>
+          </Pressable>
+        </Modal>
       )}
     </View>
   );
@@ -68,27 +109,69 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    minHeight: 68,
     paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
+  typeIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+  },
   info: {
     flex: 1,
-    paddingRight: spacing.sm,
+    minWidth: 0,
+    paddingRight: spacing.md,
+  },
+  trailing: {
+    alignItems: 'flex-end',
+    gap: spacing.xs,
+    minWidth: 112,
   },
   amount: {
     color: colors.primary,
+    textAlign: 'right',
+    maxWidth: 132,
   },
   amountNegative: {
     color: colors.danger,
   },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-    marginLeft: spacing.sm,
-  },
-  actionButton: {
+  menuButton: {
     padding: spacing.xs,
+  },
+  menuOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(37, 41, 48, 0.4)',
+  },
+  menuCard: {
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: radius.md,
+    borderTopRightRadius: radius.md,
+    padding: spacing.lg,
+    paddingBottom: spacing.xl,
+  },
+  menuTitle: {
+    marginBottom: spacing.md,
+  },
+  menuOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+  },
+  menuOptionPressed: {
+    opacity: 0.7,
+  },
+  menuOptionText: {
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

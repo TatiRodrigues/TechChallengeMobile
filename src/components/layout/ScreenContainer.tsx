@@ -32,7 +32,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
+    width: '100%',
+    maxWidth: 1180,
+    alignSelf: 'center',
     padding: spacing.md,
-    paddingBottom: spacing.xl,
+    paddingBottom: 104,
   },
 });

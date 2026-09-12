@@ -1,5 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -14,7 +15,12 @@ import { clearTransactionDraft, loadTransactionDraft, saveTransactionDraft } fro
 import { createTransaction, updateTransaction } from '../services/transactions';
 import { colors, radius, spacing } from '../theme/tokens';
 import { MainTabParamList } from '../types/navigation';
-import { TransactionType, transactionTypeLabels } from '../types/transaction';
+import {
+  ReceiptAttachment,
+  transactionCategories,
+  TransactionType,
+  transactionTypeLabels,
+} from '../types/transaction';
 
 const transactionTypes: { value: TransactionType; label: string }[] = [
   { value: 'deposito', label: transactionTypeLabels.deposito },
@@ -22,7 +28,7 @@ const transactionTypes: { value: TransactionType; label: string }[] = [
   { value: 'saque', label: transactionTypeLabels.saque },
 ];
 
-const categoryOptions = ['Alimentação', 'Moradia', 'Transporte', 'Saúde', 'Educação', 'Lazer', 'Salário', 'Outros'];
+const categoryOptions: string[] = [...transactionCategories];
 
 function parseAmount(value: string): number {
   return Number(value.replace(/\D/g, '')) / 100;
@@ -38,10 +44,32 @@ function formatAmount(value: string): string {
   });
 }
 
+function formatDateInput(date: Date): string {
+  return date.toLocaleDateString('pt-BR');
+}
+
+function parseDateInput(value: string): Date | null {
+  const match = value.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!match) return null;
+
+  const [, day, month, year] = match;
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  if (
+    date.getFullYear() !== Number(year) ||
+    date.getMonth() !== Number(month) - 1 ||
+    date.getDate() !== Number(day)
+  ) {
+    return null;
+  }
+
+  return date;
+}
+
 function validateTransactionDraft(
   selectedType: TransactionType,
   description: string,
   amount: string,
+  date: string,
   category: string,
 ): string | null {
   if (!description.trim()) {
@@ -53,8 +81,16 @@ function validateTransactionDraft(
     return 'Informe um valor maior que zero.';
   }
 
+  if (!parseDateInput(date)) {
+    return 'Informe uma data válida no formato DD/MM/AAAA.';
+  }
+
   if (!category.trim()) {
     return 'Selecione uma categoria para a transação.';
+  }
+
+  if (!categoryOptions.includes(category)) {
+    return 'Selecione uma categoria válida para a transação.';
   }
 
   if (selectedType === 'saque' && parsedAmount > 1000000) {
@@ -91,10 +127,11 @@ export function NewTransactionScreen() {
   const [selectedType, setSelectedType] = useState<TransactionType>('deposito');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
+  const [date, setDate] = useState(formatDateInput(new Date()));
   const [category, setCategory] = useState('');
   const [categoryOptionsVisible, setCategoryOptionsVisible] = useState(false);
-  const [receiptUri, setReceiptUri] = useState<string | null>(null);
-  const [existingReceiptUrl, setExistingReceiptUrl] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<ReceiptAttachment | null>(null);
+  const [existingReceipt, setExistingReceipt] = useState<ReceiptAttachment | null>(null);
   const [removeExistingReceipt, setRemoveExistingReceipt] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -107,9 +144,18 @@ export function NewTransactionScreen() {
     setSelectedType(editingTransaction.type);
     setDescription(editingTransaction.description);
     setAmount(formatAmount(String(Math.round(editingTransaction.amount * 100))));
+    setDate(formatDateInput(editingTransaction.createdAt));
     setCategory(editingTransaction.category);
-    setExistingReceiptUrl(editingTransaction.receiptUrl ?? null);
-    setReceiptUri(null);
+    setExistingReceipt(
+      editingTransaction.receiptUrl
+        ? {
+            uri: editingTransaction.receiptUrl,
+            name: editingTransaction.receiptName ?? 'Recibo anexado',
+            mimeType: editingTransaction.receiptMimeType ?? 'image/jpeg',
+          }
+        : null,
+    );
+    setReceipt(null);
     setRemoveExistingReceipt(false);
   }, [editingTransaction]);
 
@@ -124,8 +170,17 @@ export function NewTransactionScreen() {
       setSelectedType(savedDraft.selectedType);
       setDescription(savedDraft.description);
       setAmount(savedDraft.amount);
+      setDate(savedDraft.date || formatDateInput(new Date()));
       setCategory(savedDraft.category);
-      setReceiptUri(savedDraft.receiptUri);
+      setReceipt(
+        savedDraft.receiptUri
+          ? {
+              uri: savedDraft.receiptUri,
+              name: savedDraft.receiptName ?? 'recibo.jpg',
+              mimeType: savedDraft.receiptMimeType ?? 'image/jpeg',
+            }
+          : null,
+      );
     }
 
     hydrateDraft();
@@ -137,13 +192,22 @@ export function NewTransactionScreen() {
   useEffect(() => {
     if (submitting || isEditing) return;
 
-    const draft = { selectedType, description, amount, category, receiptUri };
+    const draft = {
+      selectedType,
+      description,
+      amount,
+      date,
+      category,
+      receiptUri: receipt?.uri ?? null,
+      receiptName: receipt?.name ?? null,
+      receiptMimeType: receipt?.mimeType ?? null,
+    };
     saveTransactionDraft(draft);
     setDraftSaved(true);
 
     const timeout = setTimeout(() => setDraftSaved(false), 1400);
     return () => clearTimeout(timeout);
-  }, [amount, category, description, receiptUri, selectedType, submitting, isEditing]);
+  }, [amount, category, date, description, receipt, selectedType, submitting, isEditing]);
 
   async function handlePickReceipt() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -159,33 +223,57 @@ export function NewTransactionScreen() {
     });
 
     if (!result.canceled && result.assets[0]) {
-      setReceiptUri(result.assets[0].uri);
+      const asset = result.assets[0];
+      setReceipt({
+        uri: asset.uri,
+        name: asset.fileName ?? 'recibo.jpg',
+        mimeType: asset.mimeType ?? 'image/jpeg',
+      });
+      setRemoveExistingReceipt(false);
+    }
+  }
+
+  async function handlePickDocument() {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: 'application/pdf',
+      copyToCacheDirectory: true,
+      multiple: false,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0];
+      setReceipt({
+        uri: asset.uri,
+        name: asset.name,
+        mimeType: asset.mimeType ?? 'application/pdf',
+      });
       setRemoveExistingReceipt(false);
     }
   }
 
   function handleRemoveReceipt() {
-    setReceiptUri(null);
-    if (existingReceiptUrl) {
+    setReceipt(null);
+    if (existingReceipt) {
       setRemoveExistingReceipt(true);
-      setExistingReceiptUrl(null);
+      setExistingReceipt(null);
     }
   }
 
   function resetForm() {
     setDescription('');
     setAmount('');
+    setDate(formatDateInput(new Date()));
     setCategory('');
     setCategoryOptionsVisible(false);
-    setReceiptUri(null);
-    setExistingReceiptUrl(null);
+    setReceipt(null);
+    setExistingReceipt(null);
     setRemoveExistingReceipt(false);
   }
 
   async function handleSubmit() {
     if (!user) return;
 
-    const validationError = validateTransactionDraft(selectedType, description, amount, category);
+    const validationError = validateTransactionDraft(selectedType, description, amount, date, category);
     if (validationError) {
       setError(validationError);
       Alert.alert('Dados incompletos', validationError);
@@ -196,6 +284,8 @@ export function NewTransactionScreen() {
     setSubmitting(true);
 
     const parsedAmount = parseAmount(amount);
+    const parsedDate = parseDateInput(date);
+    if (!parsedDate) return;
 
     try {
       if (isEditing && editingTransaction) {
@@ -203,8 +293,9 @@ export function NewTransactionScreen() {
           type: selectedType,
           description: description.trim(),
           amount: parsedAmount,
+          date: parsedDate,
           category: category.trim(),
-          receiptUri,
+          receipt,
           removeReceipt: removeExistingReceipt,
         });
 
@@ -220,8 +311,9 @@ export function NewTransactionScreen() {
         type: selectedType,
         description: description.trim(),
         amount: parsedAmount,
+        date: parsedDate,
         category: category.trim(),
-        receiptUri,
+        receipt,
       });
 
       resetForm();
@@ -234,6 +326,14 @@ export function NewTransactionScreen() {
         Alert.alert(
           'Transação salva',
           'A transação foi registrada, mas não foi possível anexar o recibo no momento.',
+        );
+        return;
+      }
+
+      if (error instanceof Error && error.message === 'RECEIPT_UPLOAD_FAILED_UPDATE') {
+        Alert.alert(
+          'Imagem não anexada',
+          'Não foi possível anexar o recibo. A transação não foi alterada.',
         );
         return;
       }
@@ -279,6 +379,17 @@ export function NewTransactionScreen() {
             style={styles.input}
           />
 
+          <Text style={styles.label}>Data da movimentação</Text>
+          <TextInput
+            accessibilityLabel="Data da movimentação"
+            value={date}
+            onChangeText={setDate}
+            keyboardType="numeric"
+            placeholder="DD/MM/AAAA"
+            placeholderTextColor={colors.textSubtle}
+            style={styles.input}
+          />
+
           <SelectField
             label="Categoria"
             onSelect={(option) => {
@@ -293,10 +404,11 @@ export function NewTransactionScreen() {
           />
 
           <AttachmentUploader
+            attachment={receipt ?? existingReceipt}
             label="Recibo ou documento"
-            onPick={handlePickReceipt}
+            onPickDocument={handlePickDocument}
+            onPickImage={handlePickReceipt}
             onRemove={handleRemoveReceipt}
-            receiptUri={receiptUri ?? existingReceiptUrl}
           />
 
           {!!error && <Text accessibilityLiveRegion="assertive" style={styles.error}>{error}</Text>}

@@ -9,6 +9,7 @@ import { DashboardScreen, LoginScreen, RegisterScreen } from '../presentation';
 import { AppHeader } from '../presentation/features/layout';
 import { NewTransactionScreen, TransactionsScreen } from '../presentation/features/transactions';
 import { AppLockScreen } from '../screens/AppLockScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors } from '../theme/tokens';
 import { MainTabParamList, RootStackParamList } from '../types/navigation';
 
@@ -42,9 +43,9 @@ function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="Resumo" component={DashboardScreen} options={{ title: 'Resumo' }} />
-      <Tab.Screen name="Transacoes" component={TransactionsScreen} options={{ title: 'Transações' }} />
-      <Tab.Screen name="NovaTransacao" component={NewTransactionScreen} options={{ title: 'Nova transação' }} />
+      <Tab.Screen name="Resumo" component={DashboardScreen} options={{ title: 'Início' }} />
+      <Tab.Screen name="Transacoes" component={TransactionsScreen} options={{ title: 'Histórico' }} />
+      <Tab.Screen name="NovaTransacao" component={NewTransactionScreen} options={{ title: 'Adicionar' }} />
     </Tab.Navigator>
   );
 }
@@ -67,7 +68,10 @@ export function AppNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
-        <Stack.Screen name="Main" component={MainTabs} />
+        <>
+          <Stack.Screen name="Main" component={MainTabs} />
+          <Stack.Screen name="Profile" component={ProfileScreen} options={{ presentation: 'modal' }} />
+        </>
       ) : (
         <>
           <Stack.Screen name="Login" component={LoginScreen} />

@@ -24,12 +24,12 @@ export function MetricCard({ label, value, color, icon, containerStyle }: Metric
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    minHeight: 145,
+    minHeight: 132,
     padding: spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.surface,
-    borderRadius: radius.sm,
+    borderRadius: radius.lg,
     elevation: 2,
     shadowColor: '#000',
     shadowOpacity: 0.05,

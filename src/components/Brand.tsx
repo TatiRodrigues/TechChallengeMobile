@@ -6,27 +6,28 @@ const logo = require('../../assets/logo.jpg');
 
 type BrandProps = {
   compact?: boolean;
+  large?: boolean;
   inverse?: boolean;
 };
 
-export function Brand({ compact = false, inverse = false }: BrandProps) {
+export function Brand({ compact = false, large = false, inverse = false }: BrandProps) {
   const foreground = inverse ? colors.surface : colors.primaryDark;
 
   return (
     <View style={styles.container}>
-      <View style={[styles.mark, inverse && styles.markInverse, compact && styles.markCompact]}>
+      <View style={[styles.mark, inverse && styles.markInverse, compact && styles.markCompact, large && styles.markLarge]}>
         <Image
           accessibilityLabel="Logo Alecrim Wallet"
           source={logo}
-          style={[styles.logo, compact && styles.logoCompact]}
+          style={[styles.logo, compact && styles.logoCompact, large && styles.logoLarge]}
         />
       </View>
       <View style={styles.copy}>
-        <Text style={[styles.name, { color: foreground }, compact && styles.nameCompact]}>
+        <Text style={[styles.name, { color: foreground }, compact && styles.nameCompact, large && styles.nameLarge]}>
           Alecrim Wallet
         </Text>
         {!compact && (
-          <Text style={[styles.tagline, inverse && styles.taglineInverse]}>
+          <Text style={[styles.tagline, inverse && styles.taglineInverse, large && styles.taglineLarge]}>
             Seu gerenciador de transações
           </Text>
         )}
@@ -59,6 +60,11 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: 19,
   },
+  markLarge: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+  },
   logo: {
     width: 42,
     height: 42,
@@ -70,6 +76,11 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
   },
+  logoLarge: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+  },
   copy: {
     marginLeft: spacing.sm,
   },
@@ -80,6 +91,9 @@ const styles = StyleSheet.create({
   nameCompact: {
     fontSize: 16,
   },
+  nameLarge: {
+    fontSize: 30,
+  },
   tagline: {
     color: colors.textMuted,
     fontSize: 12,
@@ -87,5 +101,9 @@ const styles = StyleSheet.create({
   },
   taglineInverse: {
     color: 'rgba(255,255,255,0.82)',
+  },
+  taglineLarge: {
+    fontSize: 16,
+    marginTop: 4,
   },
 });

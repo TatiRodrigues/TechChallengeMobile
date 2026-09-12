@@ -6,8 +6,11 @@ export type TransactionDraft = {
   selectedType: TransactionType;
   description: string;
   amount: string;
+  date: string;
   category: string;
   receiptUri: string | null;
+  receiptName: string | null;
+  receiptMimeType: string | null;
 };
 
 const TRANSACTION_DRAFT_KEY = 'alecrim.wallet.transactionDraft';
@@ -22,8 +25,11 @@ export async function loadTransactionDraft(): Promise<TransactionDraft | null> {
       selectedType: parsed.selectedType ?? 'deposito',
       description: parsed.description ?? '',
       amount: parsed.amount ?? '',
+      date: parsed.date ?? '',
       category: parsed.category ?? '',
       receiptUri: parsed.receiptUri ?? null,
+      receiptName: parsed.receiptName ?? null,
+      receiptMimeType: parsed.receiptMimeType ?? null,
     };
   } catch {
     return null;

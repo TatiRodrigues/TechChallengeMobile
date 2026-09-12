@@ -1,13 +1,13 @@
 export const colors = {
-  background: '#F5F6FE',
+  background: '#F4F7F5',
   surface: '#FFFFFF',
-  primary: '#15A362',
-  primaryDark: '#2D7A3E',
-  primarySoft: '#EDFDF6',
+  primary: '#159A61',
+  primaryDark: '#176B46',
+  primarySoft: '#E8F7EF',
   text: '#252930',
   textMuted: '#5D6778',
   textSubtle: '#828D9F',
-  border: '#E7E9ED',
+  border: '#DDE6E0',
   info: '#667EEA',
   warning: '#F5A524',
   danger: '#DC3545',
@@ -22,6 +22,7 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  sm: 4,
-  md: 8,
+  sm: 10,
+  md: 14,
+  lg: 20,
 } as const;

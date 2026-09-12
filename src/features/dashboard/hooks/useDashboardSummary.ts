@@ -7,14 +7,7 @@ export function useDashboardSummary(transactions: Transaction[]) {
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  const monthlyTransactions = useMemo(
-    () =>
-      transactions.filter(
-        (transaction) =>
-          transaction.createdAt.getMonth() === currentMonth && transaction.createdAt.getFullYear() === currentYear,
-      ),
-    [transactions, currentMonth, currentYear],
-  );
+  const monthlyTransactions = transactions;
 
   const summary = useMemo(() => {
     return transactions.reduce(
@@ -69,13 +62,23 @@ export function useDashboardSummary(transactions: Transaction[]) {
     });
 
     return chartMonths.map(({ month, year, label }) => {
-      const monthTotal = transactions
+      const monthTotals = transactions
         .filter((transaction) => transaction.createdAt.getMonth() === month && transaction.createdAt.getFullYear() === year)
-        .reduce((sum, transaction) => sum + transaction.amount, 0);
+        .reduce(
+          (totals, transaction) => {
+            if (transaction.type === 'saque') {
+              totals.outcome += transaction.amount;
+            } else {
+              totals.income += transaction.amount;
+            }
+            return totals;
+          },
+          { income: 0, outcome: 0 },
+        );
 
       return {
         label,
-        value: monthTotal,
+        ...monthTotals,
       };
     });
   }, [currentMonth, currentYear, transactions]);

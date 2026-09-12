@@ -2,8 +2,10 @@ import { createContext, PropsWithChildren, useContext, useEffect, useState } fro
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
   User as FirebaseUser,
 } from 'firebase/auth';
 
@@ -22,7 +24,9 @@ type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
   login: (email: string, password: string, rememberDevice?: boolean) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  updateAccountName: (name: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   loginWithBiometrics: () => Promise<boolean>;
   biometricLoginAvailable: boolean;
@@ -34,7 +38,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 function mapFirebaseUser(firebaseUser: FirebaseUser): AuthUser {
   return {
-    name: firebaseUser.email?.split('@')[0] ?? 'Usuário',
+    name: firebaseUser.displayName ?? firebaseUser.email?.split('@')[0] ?? 'Usuário',
     email: firebaseUser.email ?? '',
   };
 }
@@ -123,7 +127,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }
 
-  async function register(email: string, password: string) {
+  async function register(name: string, email: string, password: string) {
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       throw new Error('Digite um e-mail válido.');
     }
@@ -136,7 +140,31 @@ export function AuthProvider({ children }: PropsWithChildren) {
       throw new Error('Configure o Firebase no arquivo .env antes de criar uma conta.');
     }
 
-    await createUserWithEmailAndPassword(auth, email, password);
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(credential.user, { displayName: name });
+    setUser(mapFirebaseUser(credential.user));
+  }
+
+  async function resetPassword(email: string) {
+    if (!auth || !firebaseConfigured) {
+      throw new Error('Configure o Firebase no arquivo .env antes de recuperar a senha.');
+    }
+
+    await sendPasswordResetEmail(auth, email);
+  }
+
+  async function updateAccountName(name: string) {
+    const trimmedName = name.trim();
+    if (trimmedName.length < 3 || !trimmedName.includes(' ')) {
+      throw new Error('Informe seu nome completo.');
+    }
+
+    if (!auth?.currentUser) {
+      throw new Error('Não foi possível identificar a conta autenticada.');
+    }
+
+    await updateProfile(auth.currentUser, { displayName: trimmedName });
+    setUser(mapFirebaseUser(auth.currentUser));
   }
 
   async function logout() {
@@ -184,6 +212,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
         loading,
         login,
         register,
+        updateAccountName,
+        resetPassword,
         logout,
         loginWithBiometrics,
         biometricLoginAvailable,

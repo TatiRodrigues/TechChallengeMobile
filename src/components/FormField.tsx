@@ -14,6 +14,7 @@ type FormFieldProps = {
   autoCapitalize?: TextInputProps['autoCapitalize'];
   autoComplete?: TextInputProps['autoComplete'];
   autoCorrect?: boolean;
+  rightAccessory?: ReactNode;
   containerStyle?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
 };
@@ -29,6 +30,7 @@ export function FormField({
   autoCapitalize,
   autoComplete,
   autoCorrect,
+  rightAccessory,
   containerStyle,
   inputStyle,
 }: FormFieldProps) {
@@ -50,6 +52,7 @@ export function FormField({
           style={[styles.input, inputStyle]}
           value={value}
         />
+        {rightAccessory}
       </View>
     </View>
   );
@@ -63,16 +66,20 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   inputGroup: {
-    minHeight: 52,
+    minHeight: 54,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: colors.surface,
     paddingHorizontal: spacing.md,
     marginBottom: spacing.md,
+    shadowColor: '#173A2A',
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
   },
   input: {
     flex: 1,
