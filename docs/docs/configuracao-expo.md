@@ -101,9 +101,13 @@ EXPO_PUBLIC_FIREBASE_APP_ID=
 
 Depois de alterar `.env`, reinicie o servidor Expo. Essas variáveis são configurações públicas de cliente; credenciais administrativas não pertencem a elas.
 
+## EAS Build
+
+O projeto está vinculado ao EAS (conta `tatianersouza88`, projeto `alecrim-wallet`), com `extra.eas.projectId` gravado em `app.json`. O identificador Android é `br.com.alecrimwallet`, e o perfil `preview` em [eas.json](../../eas.json) gera um APK assinado para distribuição interna. Detalhes do fluxo de build e publicação estão em [Build e deploy](./build-e-deploy.md).
+
 ## Limites atuais
 
-- Não há `app.config.js`, `eas.json`, identificadores de pacote Android/iOS ou perfis EAS versionados.
+- Não há `app.config.js` versionado; a configuração é estática em `app.json`.
 - O projeto não declara permissões extras em `app.json`; a biblioteca de seleção solicita acesso à galeria em tempo de execução.
 - O modo claro é uma decisão de configuração: alternar o tema do sistema não adiciona suporte automático a tema escuro à interface.
 

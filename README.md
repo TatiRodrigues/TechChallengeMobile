@@ -249,14 +249,24 @@ Detalhes em [Firebase e dados](./docs/docs/firebase-e-dados.md).
 
 ## Distribuição Android para avaliadores
 
-O identificador Android é `br.com.alecrimwallet`. O perfil `preview` em [eas.json](./eas.json) gera um APK instalável, com distribuição interna:
+O identificador Android é `br.com.alecrimwallet`. O projeto já está vinculado ao EAS (conta `tatianersouza88`) e o perfil `preview` em [eas.json](./eas.json) gera um APK instalável, com distribuição interna:
 
 ```powershell
-npx eas-cli@24.3.0 login
-npx eas-cli@24.3.0 build --platform android --profile preview
+eas login
+eas env:push --environment preview --path .env
+eas build --platform android --profile preview
 ```
 
-Após o build, publique o APK no **Firebase App Distribution** do projeto `alecrim-wallet` e convide os avaliadores pelo e-mail. Somente os usuários convidados recebem o link de instalação; novos professores podem ser adicionados depois sem alterar o aplicativo. Consulte o guia completo em [Build e deploy](./docs/docs/build-e-deploy.md).
+Após o build, baixe o APK pela URL informada pelo EAS e publique-o no **Firebase App Distribution** (App Android `br.com.alecrimwallet`, App ID `1:645482817461:android:72198b3ad47fe6a1fc9bfc`):
+
+```powershell
+npx firebase-tools appdistribution:distribute app.apk `
+  --app "1:645482817461:android:72198b3ad47fe6a1fc9bfc" `
+  --testers "email-do-avaliador@exemplo.com" `
+  --project alecrim-wallet
+```
+
+Somente os avaliadores convidados recebem o link de instalação. Novos professores podem ser adicionados depois, incluindo o e-mail deles em `--testers` e rodando o comando novamente, sem precisar gerar um novo build. Consulte o guia completo em [Build e deploy](./docs/docs/build-e-deploy.md).
 
 ## Documentação Docusaurus
 

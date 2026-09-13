@@ -16,16 +16,45 @@ Teste também em dispositivo ou emulador, pois biometria, SecureStore e permiss�
 
 ## Aplicativo
 
-O projeto está configurado para Expo SDK 57, com o pacote Android `br.com.alecrimwallet` e o perfil `preview` versionado em [eas.json](../../eas.json). Esse perfil gera um APK para instalação direta e distribuição interna.
+O projeto está configurado para Expo SDK 57, com o pacote Android `br.com.alecrimwallet` e o perfil `preview` versionado em [eas.json](../../eas.json). Esse perfil gera um APK para instalação direta e distribuição interna. O projeto já está vinculado ao EAS (conta `tatianersouza88`, projeto `alecrim-wallet`); o `projectId` fica em `app.json` (`extra.eas.projectId`).
+
+### 1. Login e variáveis de ambiente
 
 ```powershell
-npx eas-cli@24.3.0 login
-npx eas-cli@24.3.0 build --platform android --profile preview
+npm install --global eas-cli@24.3.0
+eas login
+eas env:push --environment preview --path .env
 ```
 
-O build é executado remotamente pelo EAS. Ao terminar, copie a URL do APK e publique o arquivo no **Firebase App Distribution** do projeto `alecrim-wallet`. Convide cada avaliador por e-mail; apenas os convidados terão acesso ao download e à instalação.
+O comando `env:push` cadastra as seis variáveis `EXPO_PUBLIC_FIREBASE_*` no ambiente `preview` do EAS, para que o build remoto tenha a mesma configuração do `.env` local. Repita esse passo sempre que o `.env` mudar.
 
-Para atualizar uma versão, gere um novo build com o mesmo perfil e crie uma nova release no App Distribution. Não versionar `.env`, tokens de acesso ou credenciais administrativas.
+### 2. Gerar o APK
+
+```powershell
+eas build --platform android --profile preview
+```
+
+O build roda em servidores do EAS: compacta o projeto, gera (ou reaproveita) uma keystore Android gerenciada pelo EAS e produz um APK assinado. Ao final, o comando mostra a URL do artefato (`https://expo.dev/artifacts/eas/...apk`) e o build fica visível em `https://expo.dev/accounts/tatianersouza88/projects/alecrim-wallet/builds`.
+
+### 3. Publicar no Firebase App Distribution
+
+Baixe o APK gerado e publique-o para os testadores cadastrados no App Distribution do Firebase (App Android `br.com.alecrimwallet`, App ID `1:645482817461:android:72198b3ad47fe6a1fc9bfc`):
+
+```powershell
+curl.exe --location --output app.apk "<URL do artefato do build>"
+
+npx firebase-tools appdistribution:distribute app.apk `
+  --app "1:645482817461:android:72198b3ad47fe6a1fc9bfc" `
+  --testers "tati.rodrigues88@hotmail.com,tati.rodrigues632@gmail.com" `
+  --release-notes "Build de teste privado - Alecrim Wallet" `
+  --project alecrim-wallet
+```
+
+Somente os e-mails passados em `--testers` (ou já cadastrados no console) recebem o convite e o link de instalação. Para adicionar um novo avaliador (por exemplo, quando o professor responsável for confirmado), inclua o e-mail dele em `--testers` e rode o comando de distribuição novamente — não é necessário gerar um novo build só para adicionar testadores.
+
+Não versione o arquivo `.apk` baixado nem o remova do local temporário sem necessidade; ele não deve ser commitado no repositório.
+
+Para atualizar uma versão, gere um novo build com o mesmo perfil (`eas build`) e distribua novamente (`appdistribution:distribute`), incrementando a versão se necessário. Não versionar `.env`, tokens de acesso ou credenciais administrativas.
 
 Consulte sempre a [documentação versionada do Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/) antes de alterar configurações, APIs nativas ou dependências do Expo.
 
