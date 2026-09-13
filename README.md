@@ -81,10 +81,11 @@ No Firebase Console:
 3. Crie o banco **Cloud Firestore**.
 4. Configure o **Storage**.
 5. Defina regras de autorização para os documentos e arquivos de cada usuário.
-6. Crie os índices compostos descritos em [firestore.indexes.json](./firestore.indexes.json), ou implante o arquivo com Firebase CLI configurado para o projeto:
+6. Crie os índices compostos descritos em [firestore.indexes.json](./firestore.indexes.json), ou implante o arquivo com Firebase CLI. O [firebase.json](./firebase.json) referencia esse arquivo:
 
    ```powershell
-   npx firebase-tools deploy --only firestore:indexes
+   npx firebase-tools login
+   npx firebase-tools deploy --only firestore:indexes --project SEU_FIREBASE_PROJECT_ID
    ```
 
 Copie o arquivo de exemplo, sem sobrescrever uma configuração local já existente:

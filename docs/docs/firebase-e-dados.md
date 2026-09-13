@@ -50,7 +50,12 @@ As operações estão em `src/services/transactions.ts`:
 
 A assinatura do dashboard usa `where('userId', '==', userId)` e ordena por data decrescente em memória. O histórico usa `getTransactionsPage`, que aplica `where` para usuário/tipo/categoria/período, `orderBy('createdAt', 'desc')`, `limit(21)` e `startAfter` para entregar páginas de 20 itens. Não há BFF ou API REST própria entre o aplicativo e o Firestore.
 
-Os índices compostos necessários para essas combinações estão versionados em [firestore.indexes.json](../../firestore.indexes.json). Crie-os no Firebase Console ou execute `npx firebase-tools deploy --only firestore:indexes` após associar o CLI ao projeto Firebase correto.
+Os índices compostos necessários para essas combinações estão versionados em [firestore.indexes.json](../../firestore.indexes.json), referenciado por [firebase.json](../../firebase.json). Crie-os no Firebase Console ou execute os comandos abaixo após trocar o placeholder pelo ID correto:
+
+```powershell
+npx firebase-tools login
+npx firebase-tools deploy --only firestore:indexes --project SEU_FIREBASE_PROJECT_ID
+```
 
 ## Coleção `transactions`
 

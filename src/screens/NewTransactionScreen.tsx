@@ -29,6 +29,7 @@ const transactionTypes: { value: TransactionType; label: string }[] = [
 ];
 
 const categoryOptions: string[] = [...transactionCategories];
+const MAX_RECEIPT_SIZE_BYTES = 2 * 1024 * 1024;
 
 function parseAmount(value: string): number {
   return Number(value.replace(/\D/g, '')) / 100;
@@ -219,11 +220,16 @@ export function NewTransactionScreen() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
-      quality: 0.7,
+      quality: 0.5,
     });
 
     if (!result.canceled && result.assets[0]) {
       const asset = result.assets[0];
+      if (asset.fileSize && asset.fileSize > MAX_RECEIPT_SIZE_BYTES) {
+        Alert.alert('Arquivo muito grande', 'Selecione uma imagem de até 2 MB.');
+        return;
+      }
+
       setReceipt({
         uri: asset.uri,
         name: asset.fileName ?? 'recibo.jpg',
@@ -242,6 +248,11 @@ export function NewTransactionScreen() {
 
     if (!result.canceled && result.assets[0]) {
       const asset = result.assets[0];
+      if (asset.size && asset.size > MAX_RECEIPT_SIZE_BYTES) {
+        Alert.alert('Arquivo muito grande', 'Selecione um PDF de até 2 MB.');
+        return;
+      }
+
       setReceipt({
         uri: asset.uri,
         name: asset.name,
@@ -289,7 +300,7 @@ export function NewTransactionScreen() {
 
     try {
       if (isEditing && editingTransaction) {
-        await updateTransaction(editingTransaction.id, user.email, {
+        await updateTransaction(editingTransaction.id, {
           type: selectedType,
           description: description.trim(),
           amount: parsedAmount,

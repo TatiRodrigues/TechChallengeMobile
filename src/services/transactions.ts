@@ -104,9 +104,13 @@ function getAttachmentExtension(attachment: ReceiptAttachment): string {
   return attachment.name.toLowerCase().endsWith('.png') ? 'png' : 'jpg';
 }
 
-async function uploadReceipt(userId: string, attachment: ReceiptAttachment): Promise<string> {
-  const path = `receipts/${userId}/${Date.now()}.${getAttachmentExtension(attachment)}`;
-  const idToken = await auth?.currentUser?.getIdToken();
+async function uploadReceipt(attachment: ReceiptAttachment): Promise<string> {
+  const currentUser = auth?.currentUser;
+  if (!currentUser) {
+    throw new Error('RECEIPT_UPLOAD_REQUIRES_AUTHENTICATION');
+  }
+
+  const path = `receipts/${currentUser.uid}/${Date.now()}.${getAttachmentExtension(attachment)}`;
 
   if (Platform.OS === 'web') {
     const blobResponse = await fetch(attachment.uri);
@@ -116,13 +120,15 @@ async function uploadReceipt(userId: string, attachment: ReceiptAttachment): Pro
   }
 
   // Native (Android / iOS)
+  const idToken = await currentUser.getIdToken();
+
   const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o?name=${encodeURIComponent(path)}`;
   const response = await FileSystem.uploadAsync(uploadUrl, attachment.uri, {
     httpMethod: 'POST',
     uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
     headers: {
       'Content-Type': attachment.mimeType,
-      ...(idToken ? { Authorization: `Firebase ${idToken}` } : {}),
+      Authorization: `Bearer ${idToken}`,
     },
   });
 
@@ -149,7 +155,7 @@ export async function createTransaction(input: NewTransactionInput): Promise<voi
 
   if (input.receipt) {
     try {
-      receiptUrl = await uploadReceipt(input.userId, input.receipt);
+      receiptUrl = await uploadReceipt(input.receipt);
     } catch (error) {
       // Save transaction even when receipt upload fails.
       const firebaseError = error as { code?: string; message?: string; customData?: { serverResponse?: string } };
@@ -218,7 +224,6 @@ type UpdateTransactionInput = {
 // replaces the existing receiptUrl; if removeReceipt is true, the receipt is cleared instead.
 export async function updateTransaction(
   transactionId: string,
-  userId: string,
   input: UpdateTransactionInput,
 ): Promise<void> {
   const updates: Record<string, unknown> = {
@@ -231,7 +236,7 @@ export async function updateTransaction(
 
   if (input.receipt) {
     try {
-      updates.receiptUrl = await uploadReceipt(userId, input.receipt);
+      updates.receiptUrl = await uploadReceipt(input.receipt);
       updates.receiptName = input.receipt.name;
       updates.receiptMimeType = input.receipt.mimeType;
     } catch (error) {
