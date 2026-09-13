@@ -216,7 +216,7 @@ O [serviço de transações](./src/services/transactions.ts) realiza CRUD na col
 
 | Campo no Firestore | Tipo | Significado |
 |---|---|---|
-| `userId` | `string` | **E-mail** do usuário autenticado, não UID do Firebase |
+| `userId` | `string` | UID do usuário autenticado no Firebase |
 | `type` | `string` | `deposito`, `transferencia` ou `saque` |
 | `description` | `string` | Descrição da movimentação |
 | `amount` | `number` | Valor positivo |
@@ -239,13 +239,24 @@ O rascunho usa uma chave única no dispositivo, sem separação por conta. Não 
 
 ### Recibos
 
-Imagens JPG/PNG e documentos PDF são enviados para `receipts/{userId}/{timestamp}.{extensão}`. Na Web, o upload usa o SDK do Storage com Blob; em Android/iOS, usa `expo-file-system/legacy` para envio binário. O `expo-document-picker` copia o PDF ao cache antes do upload, para que o arquivo esteja disponível à API nativa.
+Imagens JPG/PNG e documentos PDF são enviados para `receipts/{uid}/{timestamp}.{extensão}`. Na Web, o upload usa o SDK do Storage com Blob; em Android/iOS, usa `expo-file-system/legacy` para envio binário com token Firebase Bearer. O `expo-document-picker` copia o PDF ao cache antes do upload, para que o arquivo esteja disponível à API nativa. Anexos são limitados a 2 MB e imagens são comprimidas antes do envio.
 
 - Na **criação**, uma falha no upload permite salvar a transação sem imagem, com aviso ao usuário.
 - Na **edição**, a falha no novo upload interrompe a atualização do documento.
 - Remover o vínculo ou excluir uma transação **não apaga automaticamente o arquivo no Storage**.
 
 Detalhes em [Firebase e dados](./docs/docs/firebase-e-dados.md).
+
+## Distribuição Android para avaliadores
+
+O identificador Android é `br.com.alecrimwallet`. O perfil `preview` em [eas.json](./eas.json) gera um APK instalável, com distribuição interna:
+
+```powershell
+npx eas-cli@24.3.0 login
+npx eas-cli@24.3.0 build --platform android --profile preview
+```
+
+Após o build, publique o APK no **Firebase App Distribution** do projeto `alecrim-wallet` e convide os avaliadores pelo e-mail. Somente os usuários convidados recebem o link de instalação; novos professores podem ser adicionados depois sem alterar o aplicativo. Consulte o guia completo em [Build e deploy](./docs/docs/build-e-deploy.md).
 
 ## Documentação Docusaurus
 

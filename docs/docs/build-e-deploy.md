@@ -16,16 +16,16 @@ Teste também em dispositivo ou emulador, pois biometria, SecureStore e permiss�
 
 ## Aplicativo
 
-O projeto está configurado para Expo SDK 57. Ainda não há `eas.json` nem perfis de distribuição versionados. Os passos a seguir são orientações de publicação, não um pipeline já configurado.
+O projeto está configurado para Expo SDK 57, com o pacote Android `br.com.alecrimwallet` e o perfil `preview` versionado em [eas.json](../../eas.json). Esse perfil gera um APK para instalação direta e distribuição interna.
 
-Para builds distribuíveis, autentique-se no EAS, configure o projeto e defina os identificadores Android/iOS e os perfis adequados antes de construir:
-
-```bash
-npx eas-cli login
-npx eas-cli build:configure
-npx eas-cli build --platform android
-npx eas-cli build --platform ios
+```powershell
+npx eas-cli@24.3.0 login
+npx eas-cli@24.3.0 build --platform android --profile preview
 ```
+
+O build é executado remotamente pelo EAS. Ao terminar, copie a URL do APK e publique o arquivo no **Firebase App Distribution** do projeto `alecrim-wallet`. Convide cada avaliador por e-mail; apenas os convidados terão acesso ao download e à instalação.
+
+Para atualizar uma versão, gere um novo build com o mesmo perfil e crie uma nova release no App Distribution. Não versionar `.env`, tokens de acesso ou credenciais administrativas.
 
 Consulte sempre a [documentação versionada do Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/) antes de alterar configurações, APIs nativas ou dependências do Expo.
 

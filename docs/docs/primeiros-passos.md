@@ -12,6 +12,7 @@ description: Prepare o ambiente e execute o Alecrim Wallet
 - npm.
 - Expo Go compatível com SDK 57 ou development build em um dispositivo/emulador.
 - Um projeto Firebase para utilizar os fluxos autenticados.
+- Para testar a versão distribuída: Android 7 ou superior e convite no Firebase App Distribution.
 
 ## Instalação
 
@@ -64,6 +65,10 @@ npm start
 
 No Windows, use Android ou Web. Um iPhone pode acessar o servidor pelo Expo Go compatível, mas o simulador iOS exige macOS. No aparelho físico, mantenha computador e celular na mesma rede e use o QR Code exibido pelo Expo.
 
+## Testar o APK privado
+
+Para gerar uma versão instalável sem Expo Go, consulte [Build e deploy](./build-e-deploy.md). O APK de preview é distribuído pelo Firebase App Distribution, que envia um convite para o e-mail cadastrado. Depois de aceitar o convite, instale o aplicativo pelo link recebido. O acesso fica limitado aos testadores adicionados à release.
+
 ## Executando esta documentação
 
 ```bash
@@ -86,7 +91,7 @@ A documentação fica disponível em `http://localhost:3002/TechChallengeMobile/
 | Sintoma | O que verificar |
 |---|---|
 | Firebase não configurado | Preencher as seis variáveis, sem copiar valores da documentação de outro projeto, e reiniciar o Expo |
-| `permission-denied` no Firestore | Regras do projeto Firebase e identificação pelo e-mail em `userId` |
+| `permission-denied` no Firestore | Regras do projeto Firebase e identificação pelo UID em `userId` |
 | Erro de upload | Bucket, regras do Storage, conexão e permissões da galeria |
 | Biometria indisponível | Plataforma nativa, hardware/credencial cadastrada e login anterior com a opção de lembrar ativa |
 | Porta 3002 ocupada | `npm start -- --port 3003` dentro da pasta da documentação |

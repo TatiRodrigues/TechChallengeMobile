@@ -61,7 +61,7 @@ npx firebase-tools deploy --only firestore:indexes --project SEU_FIREBASE_PROJEC
 
 | Campo | Tipo | Obrigatório | Exemplo |
 |---|---|---:|---|
-| `userId` | string | Sim | `pessoa@email.com` |
+| `userId` | string | Sim | `firebase-uid` |
 | `type` | string | Sim | `saque` |
 | `description` | string | Sim | `Supermercado` |
 | `amount` | number | Sim | `189.9` |
@@ -77,11 +77,11 @@ As categorias reconhecidas são Alimentação, Moradia, Transporte, Saúde, Educ
 
 ## Regras de segurança recomendadas
 
-As regras do Firestore e Storage devem garantir que um usuário somente acesse documentos e arquivos próprios. Como o aplicativo usa o e-mail no campo `userId`, alinhe as regras ao identificador escolhido ou evolua o modelo para armazenar também `request.auth.uid`.
+As regras do Firestore e Storage devem garantir que um usuário somente acesse documentos e arquivos próprios. O aplicativo grava o UID do Firebase em `userId` e usa o mesmo UID no caminho `receipts/{uid}/...`.
 
 O filtro no cliente não substitui regras de autorização no servidor. Este repositório não inclui arquivos de regras implantáveis nem validação automática delas; configurar as permissões no projeto Firebase é uma etapa obrigatória antes de usar dados reais.
 
-No Firestore, as regras podem comparar `resource.data.userId` e `request.resource.data.userId` com `request.auth.token.email` para o modelo atual. No Storage, o caminho contém o e-mail em `receipts/{userId}/...`; regras devem considerar a codificação e os caracteres permitidos por esse identificador. Migrar para `request.auth.uid` simplifica essa associação, mas exigiria alterar o modelo, a escrita e a consulta existentes.
+No Firestore, as regras devem comparar `resource.data.userId` e `request.resource.data.userId` com `request.auth.uid`. No Storage, o caminho `receipts/{uid}/...` deve ser comparado com `request.auth.uid`. As regras implantáveis estão em [storage.rules](../../storage.rules).
 
 :::caution Não versionar segredos
 O arquivo `.env` não deve ser commitado. Use apenas `.env.example` como contrato das variáveis necessárias.

@@ -57,7 +57,7 @@ Cada movimentação possui tipo, descrição, valor, data e categoria. O formul�
 
 ## Recibos
 
-Imagens JPG/PNG escolhidas da galeria e documentos PDF escolhidos pelo seletor de arquivos são enviados para `receipts/{userId}/{timestamp}.{extensão}` no Firebase Storage. Na Web o upload usa Blob; em Android e iOS usa a API legada de upload binário do Expo FileSystem. O documento é copiado ao cache antes do envio.
+Imagens JPG/PNG escolhidas da galeria e documentos PDF escolhidos pelo seletor de arquivos são enviados para `receipts/{uid}/{timestamp}.{extensão}` no Firebase Storage. Na Web o upload usa Blob; em Android e iOS usa a API legada de upload binário do Expo FileSystem com token Firebase Bearer. O documento é copiado ao cache antes do envio. Anexos têm limite de 2 MB e imagens são comprimidas antes do envio.
 
 Cada transação armazena a URL, o nome e o MIME do anexo. A interface mostra prévia para imagens e um indicador com o nome do arquivo para PDF.
 
