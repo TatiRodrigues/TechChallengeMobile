@@ -28,6 +28,12 @@
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "08b82201-61d3-4527-a434-4d050816d64b"
+      }
+    },
+    "owner": "tatianersouza88"
   }
 }
