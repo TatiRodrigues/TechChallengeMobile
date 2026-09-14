@@ -57,6 +57,10 @@ describe('linking', () => {
         ],
       },
     ],
+    [
+      'rota-que-nao-existe',
+      { routes: [{ name: 'NotFound', path: 'rota-que-nao-existe' }] },
+    ],
   ])('maps %s to the expected navigation state', (path, expectedState) => {
     expect(getStateFromPath(path, linking.config)).toEqual(expectedState);
   });

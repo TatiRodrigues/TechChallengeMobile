@@ -59,4 +59,4 @@ export function TrendExample() {
 - Valores positivos pequenos usam altura visual mínima de 8%; compare valores no tooltip, não somente pelas alturas.
 - Não há `onSelect`, customização de cores, eixos configuráveis ou prop `loading`.
 
-**Veja também:** [CategoryBreakdown](./category-breakdown.md) e [funcionalidades do dashboard](../funcionalidades.md).
+**Veja também:** [funcionalidades do dashboard](../funcionalidades.md).

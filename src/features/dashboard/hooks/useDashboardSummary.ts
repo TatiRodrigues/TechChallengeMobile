@@ -27,29 +27,6 @@ export function useDashboardSummary(transactions: Transaction[]) {
     );
   }, [transactions]);
 
-  const categoryBreakdown = useMemo(() => {
-    const expenseByCategory = new Map<string, number>();
-    let totalExpense = 0;
-
-    monthlyTransactions.forEach((transaction) => {
-      if (transaction.type !== 'saque') return;
-      totalExpense += transaction.amount;
-      expenseByCategory.set(
-        transaction.category,
-        (expenseByCategory.get(transaction.category) ?? 0) + transaction.amount,
-      );
-    });
-
-    return Array.from(expenseByCategory.entries())
-      .map(([label, value]) => ({
-        label,
-        value,
-        percentage: totalExpense ? Math.round((value / totalExpense) * 100) : 0,
-      }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 4);
-  }, [monthlyTransactions]);
-
   const monthlyChartData = useMemo(() => {
     const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     const chartMonths = Array.from({ length: 6 }, (_, index) => {
@@ -85,7 +62,6 @@ export function useDashboardSummary(transactions: Transaction[]) {
 
   return {
     ...summary,
-    categoryBreakdown,
     monthlyChartData,
     monthlyTransactions,
   };

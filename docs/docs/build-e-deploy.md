@@ -74,7 +74,18 @@ Consulte sempre a [documentação versionada do Expo SDK 57](https://docs.expo.d
 npm run web
 ```
 
-Para uma exportação estática, utilize o comando recomendado pela versão atual do Expo e valide autenticação, URLs do Storage e regras de CORS no ambiente publicado.
+Para uma exportação estática, execute `npx expo export --platform web --output-dir dist` e valide autenticação, URLs do Storage e regras de CORS no ambiente publicado.
+
+### Publicar no Firebase Hosting
+
+O [firebase.json](../../firebase.json) já declara um site de Hosting apontando para a pasta `dist` gerada pelo comando acima, com um rewrite `"**" → "/index.html"`. Isso é essencial para uma SPA: sem ele, recarregar ou abrir diretamente uma URL como `/historico` retorna 404 do servidor antes mesmo de o React Navigation carregar e poder exibir a tela `NotFound`. Para publicar:
+
+```bash
+npx expo export --platform web --output-dir dist
+firebase deploy --only hosting
+```
+
+O projeto padrão do Firebase CLI está fixado no arquivo `.firebaserc` (raiz do repositório) como `alecrim-wallet`. Publicar o Hosting cria uma URL pública somente leitura do build Web; nenhuma credencial adicional é exposta além das já usadas no app (chaves públicas do Firebase client SDK). Gerar o `firebase.json` com essa configuração não publica nada sozinho — é preciso executar `firebase deploy --only hosting` explicitamente.
 
 ## Documentação
 

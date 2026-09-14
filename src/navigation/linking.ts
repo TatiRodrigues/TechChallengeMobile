@@ -17,6 +17,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
           NovaTransacao: 'transacoes/:transactionId?',
         },
       },
+      NotFound: '*',
     },
   },
 };

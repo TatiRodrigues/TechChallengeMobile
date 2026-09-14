@@ -55,7 +55,6 @@ const sidebars = {
                 'componentes/metric-card',
                 'componentes/transaction-list-item',
                 'componentes/monthly-trend-chart',
-                'componentes/category-breakdown',
               ],
             },
           ],

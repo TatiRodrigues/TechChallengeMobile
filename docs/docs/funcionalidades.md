@@ -44,6 +44,8 @@ O histórico combina:
 
 O histórico busca páginas de 20 documentos no Cloud Firestore, sempre ordenadas da movimentação mais nova para a mais antiga. Tipo, categoria e período compõem a consulta do servidor; a busca parcial por descrição filtra os documentos das páginas já carregadas, pois o Firestore não oferece busca nativa por substring. A paginação é manual, não rolagem automática: quando houver mais resultados, use **Carregar mais transações** para buscar a página seguinte.
 
+Os totais de entradas, saídas e resultado somam apenas as transações já carregadas na tela. Enquanto houver mais páginas disponíveis, um aviso abaixo dos totais explica que a soma é parcial e convida a carregar o restante; depois que a última página é buscada, o texto confirma que a soma cobre todas as transações encontradas com os filtros atuais.
+
 ## Cadastro e edição
 
 Cada movimentação possui tipo, descrição, valor, data e categoria. O formulário:

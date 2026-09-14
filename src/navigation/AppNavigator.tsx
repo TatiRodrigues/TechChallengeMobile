@@ -9,6 +9,7 @@ import { DashboardScreen, LoginScreen, RegisterScreen } from '../presentation';
 import { AppHeader } from '../presentation/features/layout';
 import { NewTransactionScreen, TransactionsScreen } from '../presentation/features/transactions';
 import { AppLockScreen } from '../screens/AppLockScreen';
+import { NotFoundScreen } from '../screens/NotFoundScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors } from '../theme/tokens';
 import { MainTabParamList, RootStackParamList } from '../types/navigation';
@@ -71,11 +72,13 @@ export function AppNavigator() {
         <>
           <Stack.Screen name="Main" component={MainTabs} />
           <Stack.Screen name="Profile" component={ProfileScreen} options={{ presentation: 'modal' }} />
+          <Stack.Screen name="NotFound" component={NotFoundScreen} />
         </>
       ) : (
         <>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="NotFound" component={NotFoundScreen} />
         </>
       )}
     </Stack.Navigator>

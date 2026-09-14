@@ -1,11 +1,11 @@
 ---
 title: Guia de componentes
-description: Aprenda a usar os 17 componentes do aplicativo com propriedades e exemplos React Native
+description: Aprenda a usar os 16 componentes do aplicativo com propriedades e exemplos React Native
 ---
 
 # Guia de componentes
 
-Este guia ensina a **importar, configurar e combinar todos os 17 componentes** implementados em `src/components`. Cada página traz o contrato real de propriedades, valores padrão, exemplo com imports e cuidados de integração.
+Este guia ensina a **importar, configurar e combinar todos os 16 componentes** implementados em `src/components`. Cada página traz o contrato real de propriedades, valores padrão, exemplo com imports e cuidados de integração.
 
 ## Comece pelo que você precisa
 
@@ -27,7 +27,6 @@ Este guia ensina a **importar, configurar e combinar todos os 17 componentes** i
 | Exibir um valor financeiro em destaque | [MetricCard — indicadores](./componentes/metric-card.md) |
 | Mostrar uma movimentação com ações | [TransactionListItem — itens](./componentes/transaction-list-item.md) |
 | Comparar entradas e saídas mensais | [MonthlyTrendChart — gráfico](./componentes/monthly-trend-chart.md) |
-| Mostrar a distribuição de gastos | [CategoryBreakdown — categorias](./componentes/category-breakdown.md) |
 
 ## Como experimentar os exemplos
 

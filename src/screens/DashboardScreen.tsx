@@ -11,7 +11,6 @@ import { TransactionListItem } from '../components/TransactionListItem';
 import { AppCard } from '../components/ui/AppCard';
 import { AppText } from '../components/ui/AppText';
 import { ScreenContainer } from '../components/layout/ScreenContainer';
-import { CategoryBreakdown } from '../components/CategoryBreakdown';
 import { MetricCard } from '../components/MetricCard';
 import { MonthlyTrendChart } from '../components/MonthlyTrendChart';
 import {
@@ -37,7 +36,7 @@ export function DashboardScreen() {
   const [datePeriod, setDatePeriod] = useState<TransactionDatePeriod>('currentMonth');
   const sectionAnimations = useRef([new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]).current;
   const periodTransactions = filterTransactionsByDatePeriod(transactions, datePeriod);
-  const { balance, categoryBreakdown, incomeTotal, largestExpense, monthlyChartData, monthlyTransactions, outcomeTotal } =
+  const { balance, incomeTotal, largestExpense, monthlyChartData, monthlyTransactions, outcomeTotal } =
     useDashboardSummary(periodTransactions);
 
   useEffect(() => {
@@ -191,16 +190,6 @@ export function DashboardScreen() {
               </AppText>
             </View>
             <MonthlyTrendChart data={monthlyChartData} />
-
-            {categoryBreakdown.length > 0 && (
-              <>
-                <View style={styles.sectionHeader}>
-                  <AppText variant="title">Gastos por categoria</AppText>
-                  <AppText color={colors.textSubtle} variant="caption">Somente saídas no período</AppText>
-                </View>
-                <CategoryBreakdown data={categoryBreakdown} />
-              </>
-            )}
 
             <View style={styles.monthlyList}>
               <AppText style={styles.sectionHeader} variant="title">Últimas movimentações</AppText>

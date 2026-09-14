@@ -14,6 +14,7 @@ RootStack
 ├── Login
 ├── Register
 ├── Profile
+├── NotFound
 └── Main
     └── BottomTabs
         ├── Resumo
@@ -40,8 +41,9 @@ A configuração em `src/navigation/linking.ts` associa o scheme `alecrimwallet:
 | `alecrimwallet://historico` | `Main > Transacoes` |
 | `alecrimwallet://transacoes` | `Main > NovaTransacao` |
 | `alecrimwallet://transacoes/:transactionId` | `Main > NovaTransacao`, em edição |
+| Qualquer outro caminho | `NotFound`, com um botão para voltar ao início ou ao login |
 
-Links da área `Main` dependem de autenticação. Antes do login, a árvore de navegação contém apenas `Login` e `Register`; depois de autenticar, abra novamente o link pretendido. Veja [Configuração Expo](./configuracao-expo.md#deep-links) para requisitos de build e comandos de teste.
+Links da área `Main` dependem de autenticação. Antes do login, a árvore de navegação contém apenas `Login`, `Register` e `NotFound`; depois de autenticar, abra novamente o link pretendido. `NotFound` é registrado com o caminho coringa `*` em `linking.config`, então qualquer rota sem correspondência (link quebrado, deep link removido ou URL digitada manualmente na Web) mostra essa tela em vez de travar a navegação. Veja [Configuração Expo](./configuracao-expo.md#deep-links) para requisitos de build e comandos de teste.
 
 ## Estado de autenticação
 

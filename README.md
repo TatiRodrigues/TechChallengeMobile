@@ -199,11 +199,11 @@ Após mudar o scheme, gere uma nova development/production build. O scheme não 
 
 ## Componentes e design system
 
-O catálogo contém **17 componentes**, com propriedades, exemplos TSX e limites de uso documentados:
+O catálogo contém **16 componentes**, com propriedades, exemplos TSX e limites de uso documentados:
 
 - **Ações e formulários:** `PrimaryButton`, `FormField`, `SelectField`, `SegmentedControl`, `FilterChip`, `AttachmentUploader`.
 - **Layout e identidade:** `ScreenContainer`, `AppCard`, `AppText`, `SectionHeader`, `Brand`, `AppHeader`.
-- **Dados e feedback:** `MetricCard`, `TransactionListItem`, `MonthlyTrendChart`, `CategoryBreakdown`, `EmptyState`.
+- **Dados e feedback:** `MetricCard`, `TransactionListItem`, `MonthlyTrendChart`, `EmptyState`.
 
 O tema centraliza [cores, espaçamentos e raios](./src/theme/tokens.ts) e [tipografia](./src/theme/typography.ts). O aplicativo está configurado para interface clara. Os gráficos atuais são compostos com elementos React Native.
 
