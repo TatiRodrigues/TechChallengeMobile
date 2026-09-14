@@ -40,6 +40,8 @@ npm test
 npm run test:coverage
 ```
 
+O `tsconfig.json` exclui os diretórios gerados `coverage`, `dist` e `web-build`, além da documentação e das pastas nativas. Dessa forma, a checagem valida somente o código-fonte do aplicativo e não tenta analisar bundles JavaScript minificados gerados por testes ou builds.
+
 Os testes automatizados não substituem testes funcionais em aparelho, validação das regras Firebase ou auditoria de acessibilidade. Consulte a [Estratégia de testes](./estrategia-de-testes.md) para escopo, mocks e cenários de integração.
 
 ## Checklist antes de publicar

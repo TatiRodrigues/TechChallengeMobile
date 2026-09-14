@@ -165,11 +165,12 @@ export function NewTransactionScreen() {
   }, [editingTransaction]);
 
   useEffect(() => {
-    if (isEditing || !user) return;
+    const userEmail = user?.email;
+    if (isEditing || !userEmail) return;
     let active = true;
 
-    async function hydrateDraft() {
-      const savedDraft = await loadTransactionDraft(user.email);
+    async function hydrateDraft(draftUserEmail: string) {
+      const savedDraft = await loadTransactionDraft(draftUserEmail);
       if (!active || !savedDraft) return;
 
       setSelectedType(savedDraft.selectedType);
@@ -179,7 +180,7 @@ export function NewTransactionScreen() {
       setCategory(savedDraft.category);
     }
 
-    hydrateDraft();
+    hydrateDraft(userEmail);
     return () => {
       active = false;
     };

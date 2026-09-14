@@ -306,6 +306,8 @@ O script de validação do aplicativo é:
 npm run type-check
 ```
 
+O TypeScript valida apenas o código-fonte do aplicativo: artefatos gerados em `coverage`, `dist` e `web-build` são excluídos pelo `tsconfig.json`.
+
 O projeto ainda não possui comando de lint. O build Docusaurus valida a documentação, não substitui testes de comportamento do app.
 
 O projeto usa Jest com `jest-expo` e React Native Testing Library. Há testes unitários para a regra de filtro por período e testes de integração para o comportamento de `PrimaryButton`. Consulte a [Estratégia de testes](./docs/docs/estrategia-de-testes.md) para convenções, mocks e próximos cenários.
