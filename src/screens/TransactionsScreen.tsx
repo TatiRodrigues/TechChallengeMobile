@@ -201,16 +201,10 @@ export function TransactionsScreen() {
         </View>
         <View style={[styles.totalDivider, isCompact && styles.totalDividerCompact]} />
         <View style={[styles.totalItem, styles.resultTotalItem, isCompact && styles.totalItemCompact]}>
-          <AppText color={colors.textSubtle} variant="caption">Resultado</AppText>
+          <AppText color={colors.textSubtle} variant="caption">Saldo</AppText>
           <AppText color={balance < 0 ? colors.danger : colors.text} variant="strong">{formatCurrency(balance)}</AppText>
         </View>
       </View>
-
-      <AppText color={colors.textSubtle} style={styles.totalsHint} variant="caption">
-        {hasMore
-          ? `Soma das ${filteredTransactions.length} transações já carregadas com os filtros atuais. Toque em "Carregar mais transações" para incluir o restante no total.`
-          : `Soma das ${filteredTransactions.length} transações encontradas com os filtros atuais.`}
-      </AppText>
 
       <AppCard style={styles.listCard}>
         <SectionHeader title="Movimentações encontradas" />
@@ -451,7 +445,6 @@ const styles = StyleSheet.create({
   totalDividerCompact: { width: '100%', height: 1 },
   resultTotalItem: { backgroundColor: colors.primarySoft, borderRadius: radius.sm, marginVertical: spacing.xs, paddingVertical: spacing.sm },
   totalItemCompact: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 46, paddingHorizontal: spacing.md },
-  totalsHint: { marginTop: -spacing.sm, marginBottom: spacing.md },
   listCard: { padding: spacing.md, overflow: 'hidden' },
   listBody: { paddingTop: spacing.sm, gap: spacing.xs },
   listLegend: {
