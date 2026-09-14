@@ -42,7 +42,7 @@ O histórico combina:
 - totais recalculados conforme os filtros;
 - ações de editar e excluir.
 
-O histórico busca páginas de 20 documentos no Cloud Firestore. Tipo, categoria e período compõem a consulta do servidor; a busca parcial por descrição filtra os documentos das páginas já carregadas, pois o Firestore não oferece busca nativa por substring. Quando houver mais resultados, use **Carregar mais transações** para buscar a página seguinte.
+O histórico busca páginas de 20 documentos no Cloud Firestore, sempre ordenadas da movimentação mais nova para a mais antiga. Tipo, categoria e período compõem a consulta do servidor; a busca parcial por descrição filtra os documentos das páginas já carregadas, pois o Firestore não oferece busca nativa por substring. A paginação é manual, não rolagem automática: quando houver mais resultados, use **Carregar mais transações** para buscar a página seguinte.
 
 ## Cadastro e edição
 
@@ -59,7 +59,7 @@ Cada movimentação possui tipo, descrição, valor, data e categoria. O formul�
 
 Imagens JPG/PNG escolhidas da galeria e documentos PDF escolhidos pelo seletor de arquivos são enviados para `receipts/{uid}/{timestamp}-{identificador}.{extensão}` no Firebase Storage. Na Web o upload usa Blob; em Android e iOS usa a API legada de upload binário do Expo FileSystem com token Firebase Bearer. O documento é copiado ao cache antes do envio. Anexos têm limite de 2 MB e imagens são comprimidas antes do envio.
 
-Cada transação armazena a URL, o nome e o MIME do anexo. A interface mostra prévia para imagens e um indicador com o nome do arquivo para PDF. O anexo local recém-selecionado ou já salvo pode ser aberto em um modal dentro do aplicativo. Em Android/iOS, PDFs são renderizados com PDF.js em uma WebView; na Web, usam um `iframe`.
+Cada transação armazena a URL, o nome e o MIME do anexo. As listas do Início e do Histórico mostram o selo **Anexo** quando há um arquivo vinculado. A interface do formulário mostra prévia para imagens e um indicador com o nome do arquivo para PDF. O anexo local recém-selecionado ou já salvo pode ser aberto em um modal dentro do aplicativo. Em Android/iOS, PDFs são renderizados com PDF.js em uma WebView; na Web, usam um `iframe`.
 
 Se o upload falhar durante uma nova movimentação, a transação ainda é registrada e o usuário recebe um aviso. Durante uma edição, a alteração é interrompida para evitar a substituição parcial dos dados.
 

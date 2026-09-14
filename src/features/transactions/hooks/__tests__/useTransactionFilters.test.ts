@@ -89,4 +89,15 @@ describe('filterTransactionsByDatePeriod', () => {
       }).map((transaction) => transaction.id),
     ).toEqual(['current-month']);
   });
+
+  it('always orders filtered transactions from newest to oldest', () => {
+    expect(
+      filterTransactions([...transactions].reverse(), {
+        search: '',
+        activeFilter: 'todas',
+        activeCategory: null,
+        activeDatePeriod: 'all',
+      }).map((transaction) => transaction.id),
+    ).toEqual(['future-month', 'current-month', 'previous-month', 'three-months-ago']);
+  });
 });

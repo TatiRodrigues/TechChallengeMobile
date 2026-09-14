@@ -208,8 +208,8 @@ export function TransactionsScreen() {
 
       <AppCard style={styles.listCard}>
         <SectionHeader
-          action={<AppText color={colors.textSubtle} variant="caption">{filteredTransactions.length} transações</AppText>}
-          subtitle="Mais recentes primeiro"
+          action={<AppText color={colors.textSubtle} variant="caption">{filteredTransactions.length} carregadas</AppText>}
+          subtitle="Mais recentes primeiro · 20 por página"
           title="Movimentações encontradas"
         />
 

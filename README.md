@@ -16,10 +16,10 @@ O usuário pode acompanhar entradas e saídas, consultar o histórico, cadastrar
 | Sessão | Restauração pelo Firebase Auth e atalho biométrico em dispositivos compatíveis |
 | Início | Resultado do período, entradas, saídas, maior saída, últimas cinco movimentações e transições com `Animated` |
 | Gráficos | Comparação mensal de entradas/saídas e distribuição das saídas pelas quatro maiores categorias |
-| Histórico | Busca por descrição, filtros combinados e paginação de 20 transações via Cloud Firestore |
+| Histórico | Ordem do mais novo para o mais antigo, busca, filtros e paginação manual de 20 transações via Cloud Firestore |
 | Movimentações | Criação, edição e exclusão com confirmação |
 | Formulário | Validação de descrição, valor positivo, data e categoria; rascunho local na criação |
-| Anexos | Seleção de JPG/PNG ou PDF, visualização interna antes/depois de salvar, troca, remoção do vínculo e upload para o Storage |
+| Anexos | Seleção de JPG/PNG ou PDF, indicador nas listas, visualização interna antes/depois de salvar, troca, remoção do vínculo e upload para o Storage |
 | Interface | Tokens de tema, componentes reutilizáveis e layouts adaptados à largura da tela |
 
 ### Regras financeiras

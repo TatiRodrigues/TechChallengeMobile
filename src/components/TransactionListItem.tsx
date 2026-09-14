@@ -1,4 +1,4 @@
-import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, MoreVertical, Pencil, Trash2 } from 'lucide-react-native';
+import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, MoreVertical, Paperclip, Pencil, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
@@ -52,7 +52,15 @@ export function TransactionListItem({ transaction, showDate = true, onEdit, onDe
       </View>
 
       <View style={styles.info}>
-        <AppText numberOfLines={1} variant="strong">{transaction.description}</AppText>
+        <View style={styles.descriptionRow}>
+          <AppText numberOfLines={1} style={styles.description} variant="strong">{transaction.description}</AppText>
+          {!!transaction.receiptUrl && (
+            <View accessibilityLabel="Possui anexo" style={styles.attachmentBadge}>
+              <Paperclip color={colors.primaryDark} size={13} />
+              <AppText color={colors.primaryDark} variant="caption">Anexo</AppText>
+            </View>
+          )}
+        </View>
         <AppText color={colors.textSubtle} numberOfLines={1} variant="caption">
           {transactionTypeLabels[transaction.type]} · {transaction.category}
           {showDate ? ` · ${formatDate(transaction.createdAt)}` : ''}
@@ -129,6 +137,24 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     paddingRight: spacing.md,
+  },
+  descriptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  description: {
+    flexShrink: 1,
+  },
+  attachmentBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    flexShrink: 0,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: radius.sm,
+    backgroundColor: colors.primarySoft,
   },
   trailing: {
     alignItems: 'flex-end',

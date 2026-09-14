@@ -32,7 +32,8 @@ export function DashboardScreen() {
   const { user } = useAuth();
   const { transactions, loading } = useTransactions();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList, 'Resumo'>>();
-  const displayName = user?.name.replace(/^./, (letter) => letter.toUpperCase()) ?? 'Usuário';
+  const firstName = user?.name.trim().split(/\s+/)[0] || 'Usuário';
+  const displayName = firstName.replace(/^./, (letter) => letter.toUpperCase());
   const [datePeriod, setDatePeriod] = useState<TransactionDatePeriod>('currentMonth');
   const sectionAnimations = useRef([new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]).current;
   const periodTransactions = filterTransactionsByDatePeriod(transactions, datePeriod);

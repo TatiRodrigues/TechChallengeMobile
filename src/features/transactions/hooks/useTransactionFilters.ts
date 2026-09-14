@@ -65,13 +65,15 @@ export function filterTransactions(
   transactions: Transaction[],
   { search, activeFilter, activeCategory, activeDatePeriod }: AppliedTransactionFilters,
 ): Transaction[] {
-  return transactions.filter((transaction) => {
-    const matchesFilter = activeFilter === 'todas' || transaction.type === activeFilter;
-    const matchesSearch = transaction.description.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = activeCategory === null || transaction.category === activeCategory;
-    const matchesDatePeriod = filterTransactionsByDatePeriod([transaction], activeDatePeriod).length === 1;
-    return matchesFilter && matchesSearch && matchesCategory && matchesDatePeriod;
-  });
+  return transactions
+    .filter((transaction) => {
+      const matchesFilter = activeFilter === 'todas' || transaction.type === activeFilter;
+      const matchesSearch = transaction.description.toLowerCase().includes(search.toLowerCase());
+      const matchesCategory = activeCategory === null || transaction.category === activeCategory;
+      const matchesDatePeriod = filterTransactionsByDatePeriod([transaction], activeDatePeriod).length === 1;
+      return matchesFilter && matchesSearch && matchesCategory && matchesDatePeriod;
+    })
+    .sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime());
 }
 
 export function useTransactionFilters(transactions: Transaction[]) {
