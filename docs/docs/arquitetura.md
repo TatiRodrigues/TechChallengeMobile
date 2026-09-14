@@ -99,7 +99,7 @@ Essa separação é gradual: algumas validações e coordenações ainda ficam n
 
 ## Decisões importantes
 
-- O UID do usuário autenticado no Firebase é usado como `userId` nos documentos de movimentação e no caminho dos recibos.
+- O e-mail autenticado é usado como `userId` nos documentos de movimentação; o UID do Firebase identifica o diretório dos recibos no Storage.
 - A consulta Firestore filtra apenas por usuário e ordena no cliente, evitando a necessidade de índice composto.
 - Hooks de aplicação mantêm cálculos e filtros fora dos componentes visuais.
 - Interfaces de feature reexportam implementações existentes para permitir evolução gradual sem quebrar imports.

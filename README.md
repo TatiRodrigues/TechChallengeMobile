@@ -216,7 +216,7 @@ O [serviço de transações](./src/services/transactions.ts) realiza CRUD na col
 
 | Campo no Firestore | Tipo | Significado |
 |---|---|---|
-| `userId` | `string` | UID do usuário autenticado no Firebase |
+| `userId` | `string` | E-mail do usuário autenticado no Firebase |
 | `type` | `string` | `deposito`, `transferencia` ou `saque` |
 | `description` | `string` | Descrição da movimentação |
 | `amount` | `number` | Valor positivo |
@@ -235,14 +235,15 @@ O ID vem do documento Firestore. Na aplicação, `createdAt` é convertido em `D
 - **Lembrar de mim:** controla as credenciais do atalho local, não desativa a persistência da sessão Firebase.
 - **Logout:** encerra a sessão e remove as credenciais do atalho.
 
-O rascunho usa uma chave única no dispositivo, sem separação por conta. Não equivale a uma fila offline de transações.
+O rascunho é separado por conta no dispositivo e salva somente os dados do formulário. Por segurança e para impedir que um recibo apareça em outra movimentação, anexos locais não fazem parte do rascunho. Ele não equivale a uma fila offline de transações.
 
 ### Recibos
 
-Imagens JPG/PNG e documentos PDF são enviados para `receipts/{uid}/{timestamp}.{extensão}`. Na Web, o upload usa o SDK do Storage com Blob; em Android/iOS, usa `expo-file-system/legacy` para envio binário com token Firebase Bearer. O `expo-document-picker` copia o PDF ao cache antes do upload, para que o arquivo esteja disponível à API nativa. Anexos são limitados a 2 MB e imagens são comprimidas antes do envio.
+Imagens JPG/PNG e documentos PDF são enviados para `receipts/{uid}/{timestamp}-{identificador}.{extensão}`. Na Web, o upload usa o SDK do Storage com Blob; em Android/iOS, usa `expo-file-system/legacy` para envio binário com token Firebase Bearer. O identificador aleatório garante que cada upload tenha um arquivo próprio. O `expo-document-picker` copia o PDF ao cache antes do upload, para que o arquivo esteja disponível à API nativa. Anexos são limitados a 2 MB e imagens são comprimidas antes do envio.
 
 - Na **criação**, uma falha no upload permite salvar a transação sem imagem, com aviso ao usuário.
 - Na **edição**, a falha no novo upload interrompe a atualização do documento.
+- Depois de salvo, o botão **Abrir** mostra a imagem ou o PDF no visualizador disponível no dispositivo.
 - Remover o vínculo ou excluir uma transação **não apaga automaticamente o arquivo no Storage**.
 
 Detalhes em [Firebase e dados](./docs/docs/firebase-e-dados.md).
@@ -266,7 +267,7 @@ npx firebase-tools appdistribution:distribute app.apk `
   --project alecrim-wallet
 ```
 
-Somente os avaliadores convidados recebem o link de instalação. Novos professores podem ser adicionados depois, incluindo o e-mail deles em `--testers` e rodando o comando novamente, sem precisar gerar um novo build. Consulte o guia completo em [Build e deploy](./docs/docs/build-e-deploy.md).
+Para avaliadores ainda desconhecidos, compartilhe o [link público de convite do Firebase App Distribution](https://appdistribution.firebase.dev/i/51dd09f56f77ede5). Quem abrir o link pode se inscrever como testador e instalar a release mais recente sem cadastro prévio do e-mail. Como qualquer pessoa com o link pode pedir acesso, revogue-o no Firebase Console se ele for compartilhado indevidamente. Novos professores também podem ser adicionados depois via `--testers`, sem precisar gerar um novo build. Consulte o guia completo em [Build e deploy](./docs/docs/build-e-deploy.md).
 
 ## Documentação Docusaurus
 

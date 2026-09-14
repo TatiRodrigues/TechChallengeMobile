@@ -1,4 +1,4 @@
-import { FileImage, FileText, Paperclip, RefreshCw, Trash2 } from 'lucide-react-native';
+import { ExternalLink, FileImage, FileText, Paperclip, RefreshCw, Trash2 } from 'lucide-react-native';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radius, spacing } from '../theme/tokens';
@@ -10,9 +10,10 @@ type AttachmentUploaderProps = {
   onPickImage: () => void;
   onPickDocument: () => void;
   onRemove: () => void;
+  onView?: () => void;
 };
 
-export function AttachmentUploader({ label, attachment, onPickImage, onPickDocument, onRemove }: AttachmentUploaderProps) {
+export function AttachmentUploader({ label, attachment, onPickImage, onPickDocument, onRemove, onView }: AttachmentUploaderProps) {
   const isPdf = attachment?.mimeType === 'application/pdf';
 
   return (
@@ -54,6 +55,12 @@ export function AttachmentUploader({ label, attachment, onPickImage, onPickDocum
               {isPdf ? 'O documento será salvo com esta movimentação.' : 'A imagem será salva com esta movimentação.'}
             </Text>
             <View style={styles.previewActions}>
+              {onView && (
+                <Pressable accessibilityLabel="Abrir recibo anexado" onPress={onView} style={styles.actionButton}>
+                  <ExternalLink color={colors.primaryDark} size={14} />
+                  <Text style={styles.changeAttachment}>Abrir</Text>
+                </Pressable>
+              )}
               <Pressable accessibilityLabel="Trocar por imagem" onPress={onPickImage} style={styles.actionButton}>
                 <RefreshCw color={colors.primaryDark} size={14} />
                 <Text style={styles.changeAttachment}>Imagem</Text>

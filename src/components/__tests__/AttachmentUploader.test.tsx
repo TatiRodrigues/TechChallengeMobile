@@ -4,6 +4,7 @@ import { describe, expect, it, jest } from '@jest/globals';
 jest.mock('lucide-react-native', () => ({
   FileImage: () => null,
   FileText: () => null,
+  ExternalLink: () => null,
   Paperclip: () => null,
   RefreshCw: () => null,
   Trash2: () => null,
@@ -50,5 +51,28 @@ describe('AttachmentUploader', () => {
 
     expect(screen.getByText('recibo-setembro.pdf')).toBeTruthy();
     expect(screen.getByText('O documento será salvo com esta movimentação.')).toBeTruthy();
+  });
+
+  it('offers an action to open an attachment saved with a transaction', async () => {
+    const onView = jest.fn();
+
+    await render(
+      <AttachmentUploader
+        attachment={{
+          uri: 'https://example.com/recibo.jpg',
+          name: 'recibo.jpg',
+          mimeType: 'image/jpeg',
+        }}
+        label="Recibo ou documento"
+        onPickDocument={jest.fn()}
+        onPickImage={jest.fn()}
+        onRemove={jest.fn()}
+        onView={onView}
+      />,
+    );
+
+    fireEvent.press(screen.getByLabelText('Abrir recibo anexado'));
+
+    expect(onView).toHaveBeenCalledTimes(1);
   });
 });

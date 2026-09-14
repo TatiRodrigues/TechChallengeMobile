@@ -61,7 +61,7 @@ npx firebase-tools deploy --only firestore:indexes --project SEU_FIREBASE_PROJEC
 
 | Campo | Tipo | Obrigatório | Exemplo |
 |---|---|---:|---|
-| `userId` | string | Sim | `firebase-uid` |
+| `userId` | string | Sim | `pessoa@email.com` |
 | `type` | string | Sim | `saque` |
 | `description` | string | Sim | `Supermercado` |
 | `amount` | number | Sim | `189.9` |
@@ -77,11 +77,11 @@ As categorias reconhecidas são Alimentação, Moradia, Transporte, Saúde, Educ
 
 ## Regras de segurança recomendadas
 
-As regras do Firestore e Storage devem garantir que um usuário somente acesse documentos e arquivos próprios. O aplicativo grava o UID do Firebase em `userId` e usa o mesmo UID no caminho `receipts/{uid}/...`.
+As regras do Firestore e Storage devem garantir que um usuário somente acesse documentos e arquivos próprios. O aplicativo grava o e-mail autenticado em `userId` nos documentos Firestore e usa o UID do Firebase no caminho `receipts/{uid}/...` do Storage.
 
 O filtro no cliente não substitui regras de autorização no servidor. Este repositório não inclui arquivos de regras implantáveis nem validação automática delas; configurar as permissões no projeto Firebase é uma etapa obrigatória antes de usar dados reais.
 
-No Firestore, as regras devem comparar `resource.data.userId` e `request.resource.data.userId` com `request.auth.uid`. No Storage, o caminho `receipts/{uid}/...` deve ser comparado com `request.auth.uid`. As regras implantáveis estão em [storage.rules](../../storage.rules).
+No Firestore, as regras devem comparar `resource.data.userId` e `request.resource.data.userId` com `request.auth.token.email`. No Storage, o caminho `receipts/{uid}/...` deve ser comparado com `request.auth.uid`. As regras implantáveis do Storage estão em [storage.rules](../../storage.rules).
 
 :::caution Não versionar segredos
 O arquivo `.env` não deve ser commitado. Use apenas `.env.example` como contrato das variáveis necessárias.

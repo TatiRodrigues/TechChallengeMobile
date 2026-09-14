@@ -52,6 +52,16 @@ npx firebase-tools appdistribution:distribute app.apk `
 
 Somente os e-mails passados em `--testers` (ou já cadastrados no console) recebem o convite e o link de instalação. Para adicionar um novo avaliador (por exemplo, quando o professor responsável for confirmado), inclua o e-mail dele em `--testers` e rode o comando de distribuição novamente — não é necessário gerar um novo build só para adicionar testadores.
 
+### Link público para avaliadores não identificados
+
+O Firebase App Distribution também aceita links públicos de convite. O link ativo do projeto é:
+
+```text
+https://appdistribution.firebase.dev/i/51dd09f56f77ede5
+```
+
+Compartilhe-o quando não souber previamente o e-mail do avaliador. A pessoa abre o link, se inscreve com o próprio e-mail e acessa a release mais recente. O link não exige que o e-mail seja incluído antes em `--testers`. Ele é público para quem o possuir; para encerrar novos acessos, revogue-o em **Firebase Console → App Distribution → Links de convite**.
+
 Não versione o arquivo `.apk` baixado nem o remova do local temporário sem necessidade; ele não deve ser commitado no repositório.
 
 Para atualizar uma versão, gere um novo build com o mesmo perfil (`eas build`) e distribua novamente (`appdistribution:distribute`), incrementando a versão se necessário. Não versionar `.env`, tokens de acesso ou credenciais administrativas.

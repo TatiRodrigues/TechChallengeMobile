@@ -77,4 +77,4 @@ Antes de haver usuário, o contexto limpa a lista e encerra o carregamento. A te
 
 Filtros, modais, carregamento de formulários e mensagens de erro ficam junto à tela que os utiliza. O rascunho da nova movimentação é a exceção: ele é persistido no `AsyncStorage` para sobreviver à navegação ou ao fechamento do aplicativo.
 
-O serviço usa a chave única `alecrim.wallet.transactionDraft`, sem separação por conta, e guarda URI, nome e MIME do anexo local, não uma cópia durável do arquivo. Falhas de leitura retornam ausência de rascunho e falhas de escrita são ignoradas pela implementação atual. O indicador de rascunho não comprova que a gravação foi concluída.
+O serviço usa uma chave derivada de `alecrim.wallet.transactionDraft` e do e-mail da conta, separando rascunhos entre usuários do mesmo dispositivo. O rascunho guarda tipo, descrição, valor, data e categoria, mas não URI, nome ou MIME do anexo: arquivos locais não são restaurados para outra movimentação. Falhas de leitura retornam ausência de rascunho e falhas de escrita são ignoradas pela implementação atual. O indicador de rascunho não comprova que a gravação foi concluída.

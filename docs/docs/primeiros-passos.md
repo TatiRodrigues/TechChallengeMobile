@@ -67,7 +67,7 @@ No Windows, use Android ou Web. Um iPhone pode acessar o servidor pelo Expo Go c
 
 ## Testar o APK privado
 
-Para gerar uma versão instalável sem Expo Go, consulte [Build e deploy](./build-e-deploy.md). O APK de preview é distribuído pelo Firebase App Distribution, que envia um convite para o e-mail cadastrado. Depois de aceitar o convite, instale o aplicativo pelo link recebido. O acesso fica limitado aos testadores adicionados à release.
+Para gerar uma versão instalável sem Expo Go, consulte [Build e deploy](./build-e-deploy.md). O APK de preview é distribuído pelo Firebase App Distribution. Testadores cadastrados recebem convite por e-mail. Quando não se sabe antecipadamente quem avaliará o trabalho, use o [link público de convite](https://appdistribution.firebase.dev/i/51dd09f56f77ede5): o avaliador se inscreve pelo próprio e-mail e instala a release mais recente. Revogue o link no Firebase Console se não precisar mais dele.
 
 ## Executando esta documentação
 
@@ -91,7 +91,7 @@ A documentação fica disponível em `http://localhost:3002/TechChallengeMobile/
 | Sintoma | O que verificar |
 |---|---|
 | Firebase não configurado | Preencher as seis variáveis, sem copiar valores da documentação de outro projeto, e reiniciar o Expo |
-| `permission-denied` no Firestore | Regras do projeto Firebase e identificação pelo UID em `userId` |
+| `permission-denied` no Firestore | Regras do projeto Firebase e identificação pelo e-mail em `userId` |
 | Erro de upload | Bucket, regras do Storage, conexão e permissões da galeria |
 | Biometria indisponível | Plataforma nativa, hardware/credencial cadastrada e login anterior com a opção de lembrar ativa |
 | Porta 3002 ocupada | `npm start -- --port 3003` dentro da pasta da documentação |

@@ -5,7 +5,7 @@ description: Seleção de imagens e PDFs, prévia, troca e remoção controladas
 
 # AttachmentUploader
 
-Mostra o convite para escolher imagem ou PDF e apresenta o anexo selecionado. Imagens têm prévia; PDFs têm ícone e nome do arquivo. **Não abre a galeria, o seletor de documentos nem faz upload sozinho**: essas ações são callbacks fornecidos pela tela.
+Mostra o convite para escolher imagem ou PDF e apresenta o anexo selecionado. Imagens têm prévia; PDFs têm ícone e nome do arquivo. Para anexos já salvos, pode mostrar a ação **Abrir**, que delega ao aplicativo do dispositivo a visualização da imagem ou PDF. **Não abre a galeria, o seletor de documentos nem faz upload sozinho**: essas ações são callbacks fornecidos pela tela.
 
 [Implementação: AttachmentUploader.tsx](https://github.com/TatiRodrigues/TechChallengeMobile/blob/main/src/components/AttachmentUploader.tsx).
 
@@ -18,6 +18,7 @@ Mostra o convite para escolher imagem ou PDF e apresenta o anexo selecionado. Im
 | `onPickImage` | `() => void` | Sim | Selecionar ou trocar imagem |
 | `onPickDocument` | `() => void` | Sim | Selecionar ou trocar PDF |
 | `onRemove` | `() => void` | Sim | Remover a seleção |
+| `onView` | `() => void` | Não | Abrir um anexo que já foi salvo |
 
 ## Exemplo: integrar imagem e PDF
 
@@ -110,6 +111,7 @@ Na edição real, mantenha o anexo existente separado da nova seleção local. P
 - O componente oferece JPG, PNG e PDF, mas não valida tamanho de arquivo; valide esse limite antes do upload se o produto exigir.
 - Não há suporte a múltiplos anexos, progresso ou prop `loading`.
 - O nome e o indicador do arquivo representam uma seleção/URL, não confirmam upload concluído.
+- Passe `onView` somente para URLs de anexos já salvos; no fluxo principal, a tela usa `Linking` para abrir a URL no visualizador do dispositivo.
 - Cancelar o seletor é uma ação normal, não um erro.
 - Remover a prévia não apaga um objeto no Storage.
 

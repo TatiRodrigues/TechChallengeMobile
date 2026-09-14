@@ -110,7 +110,8 @@ async function uploadReceipt(attachment: ReceiptAttachment): Promise<string> {
     throw new Error('RECEIPT_UPLOAD_REQUIRES_AUTHENTICATION');
   }
 
-  const path = `receipts/${currentUser.uid}/${Date.now()}.${getAttachmentExtension(attachment)}`;
+  const uniqueFileName = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${getAttachmentExtension(attachment)}`;
+  const path = `receipts/${currentUser.uid}/${uniqueFileName}`;
 
   if (Platform.OS === 'web') {
     const blobResponse = await fetch(attachment.uri);

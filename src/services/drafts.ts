@@ -8,16 +8,17 @@ export type TransactionDraft = {
   amount: string;
   date: string;
   category: string;
-  receiptUri: string | null;
-  receiptName: string | null;
-  receiptMimeType: string | null;
 };
 
-const TRANSACTION_DRAFT_KEY = 'alecrim.wallet.transactionDraft';
+const TRANSACTION_DRAFT_KEY_PREFIX = 'alecrim.wallet.transactionDraft';
 
-export async function loadTransactionDraft(): Promise<TransactionDraft | null> {
+function getTransactionDraftKey(userId: string): string {
+  return `${TRANSACTION_DRAFT_KEY_PREFIX}.${encodeURIComponent(userId)}`;
+}
+
+export async function loadTransactionDraft(userId: string): Promise<TransactionDraft | null> {
   try {
-    const raw = await AsyncStorage.getItem(TRANSACTION_DRAFT_KEY);
+    const raw = await AsyncStorage.getItem(getTransactionDraftKey(userId));
     if (!raw) return null;
 
     const parsed = JSON.parse(raw) as Partial<TransactionDraft>;
@@ -27,26 +28,23 @@ export async function loadTransactionDraft(): Promise<TransactionDraft | null> {
       amount: parsed.amount ?? '',
       date: parsed.date ?? '',
       category: parsed.category ?? '',
-      receiptUri: parsed.receiptUri ?? null,
-      receiptName: parsed.receiptName ?? null,
-      receiptMimeType: parsed.receiptMimeType ?? null,
     };
   } catch {
     return null;
   }
 }
 
-export async function saveTransactionDraft(draft: TransactionDraft): Promise<void> {
+export async function saveTransactionDraft(userId: string, draft: TransactionDraft): Promise<void> {
   try {
-    await AsyncStorage.setItem(TRANSACTION_DRAFT_KEY, JSON.stringify(draft));
+    await AsyncStorage.setItem(getTransactionDraftKey(userId), JSON.stringify(draft));
   } catch {
     // Ignore storage errors to avoid blocking the user experience.
   }
 }
 
-export async function clearTransactionDraft(): Promise<void> {
+export async function clearTransactionDraft(userId: string): Promise<void> {
   try {
-    await AsyncStorage.removeItem(TRANSACTION_DRAFT_KEY);
+    await AsyncStorage.removeItem(getTransactionDraftKey(userId));
   } catch {
     // Ignore storage errors to avoid blocking the user experience.
   }

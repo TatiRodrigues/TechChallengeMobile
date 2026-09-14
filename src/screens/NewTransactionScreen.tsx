@@ -3,7 +3,7 @@ import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AttachmentUploader } from '../components/AttachmentUploader';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -140,7 +140,11 @@ export function NewTransactionScreen() {
 
   // Hydrates the form with the transaction being edited (navigated here from the transaction list).
   useEffect(() => {
-    if (!editingTransaction) return;
+    if (!editingTransaction) {
+      setExistingReceipt(null);
+      setRemoveExistingReceipt(false);
+      return;
+    }
 
     setSelectedType(editingTransaction.type);
     setDescription(editingTransaction.description);
@@ -161,11 +165,11 @@ export function NewTransactionScreen() {
   }, [editingTransaction]);
 
   useEffect(() => {
-    if (isEditing) return;
+    if (isEditing || !user) return;
     let active = true;
 
     async function hydrateDraft() {
-      const savedDraft = await loadTransactionDraft();
+      const savedDraft = await loadTransactionDraft(user.email);
       if (!active || !savedDraft) return;
 
       setSelectedType(savedDraft.selectedType);
@@ -173,25 +177,16 @@ export function NewTransactionScreen() {
       setAmount(savedDraft.amount);
       setDate(savedDraft.date || formatDateInput(new Date()));
       setCategory(savedDraft.category);
-      setReceipt(
-        savedDraft.receiptUri
-          ? {
-              uri: savedDraft.receiptUri,
-              name: savedDraft.receiptName ?? 'recibo.jpg',
-              mimeType: savedDraft.receiptMimeType ?? 'image/jpeg',
-            }
-          : null,
-      );
     }
 
     hydrateDraft();
     return () => {
       active = false;
     };
-  }, [isEditing]);
+  }, [isEditing, user]);
 
   useEffect(() => {
-    if (submitting || isEditing) return;
+    if (submitting || isEditing || !user) return;
 
     const draft = {
       selectedType,
@@ -199,16 +194,30 @@ export function NewTransactionScreen() {
       amount,
       date,
       category,
-      receiptUri: receipt?.uri ?? null,
-      receiptName: receipt?.name ?? null,
-      receiptMimeType: receipt?.mimeType ?? null,
     };
-    saveTransactionDraft(draft);
+    saveTransactionDraft(user.email, draft);
     setDraftSaved(true);
 
     const timeout = setTimeout(() => setDraftSaved(false), 1400);
     return () => clearTimeout(timeout);
-  }, [amount, category, date, description, receipt, selectedType, submitting, isEditing]);
+  }, [amount, category, date, description, selectedType, submitting, isEditing, user]);
+
+  async function handleOpenReceipt() {
+    const attachment = receipt ?? existingReceipt;
+    if (!attachment) return;
+
+    const supported = await Linking.canOpenURL(attachment.uri);
+    if (!supported) {
+      Alert.alert('Não foi possível abrir', 'Este dispositivo não possui um aplicativo para visualizar esse anexo.');
+      return;
+    }
+
+    try {
+      await Linking.openURL(attachment.uri);
+    } catch {
+      Alert.alert('Não foi possível abrir', 'O anexo não pôde ser aberto neste momento. Tente novamente.');
+    }
+  }
 
   async function handlePickReceipt() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -328,12 +337,12 @@ export function NewTransactionScreen() {
       });
 
       resetForm();
-      await clearTransactionDraft();
+      await clearTransactionDraft(user.email);
       Alert.alert('Sucesso', 'Transação registrada com sucesso.');
     } catch (error) {
       if (error instanceof Error && error.message === 'RECEIPT_UPLOAD_FAILED') {
         resetForm();
-        await clearTransactionDraft();
+        await clearTransactionDraft(user.email);
         Alert.alert(
           'Transação salva',
           'A transação foi registrada, mas não foi possível anexar o recibo no momento.',
@@ -420,6 +429,7 @@ export function NewTransactionScreen() {
             onPickDocument={handlePickDocument}
             onPickImage={handlePickReceipt}
             onRemove={handleRemoveReceipt}
+            onView={existingReceipt ? handleOpenReceipt : undefined}
           />
 
           {!!error && <Text accessibilityLiveRegion="assertive" style={styles.error}>{error}</Text>}
