@@ -44,7 +44,8 @@ O aplicativo usa **Expo SDK 57**. A configuração declarativa está em `app.jso
 | Área segura | `react-native-safe-area-context` | Provider raiz, cabeçalho e barra de abas |
 | Galeria | `expo-image-picker` | Seleção de imagens de recibo |
 | Arquivos | `expo-document-picker` | Seleção de documentos PDF para anexos |
-| Sistema de arquivos | `expo-file-system/legacy` | Upload binário de recibos em Android/iOS |
+| Sistema de arquivos | `expo-file-system/legacy` | Upload binário e cache temporário de PDFs em Android/iOS |
+| Conteúdo Web nativo | `react-native-webview` | Renderização interna de PDFs com PDF.js em Android/iOS |
 | Autenticação local | `expo-local-authentication` | Biometria ou credencial do aparelho |
 | Armazenamento seguro | `expo-secure-store` | E-mail e senha do atalho biométrico |
 | Armazenamento simples | `@react-native-async-storage/async-storage` | Sessão Firebase e rascunho do formulário |

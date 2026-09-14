@@ -3,8 +3,9 @@ import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { AttachmentPreviewModal } from '../components/AttachmentPreviewModal';
 import { AttachmentUploader } from '../components/AttachmentUploader';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { SegmentedControl } from '../components/SegmentedControl';
@@ -137,6 +138,7 @@ export function NewTransactionScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [draftSaved, setDraftSaved] = useState(false);
+  const [attachmentPreviewVisible, setAttachmentPreviewVisible] = useState(false);
 
   // Hydrates the form with the transaction being edited (navigated here from the transaction list).
   useEffect(() => {
@@ -203,20 +205,9 @@ export function NewTransactionScreen() {
     return () => clearTimeout(timeout);
   }, [amount, category, date, description, selectedType, submitting, isEditing, user]);
 
-  async function handleOpenReceipt() {
-    const attachment = receipt ?? existingReceipt;
-    if (!attachment) return;
-
-    const supported = await Linking.canOpenURL(attachment.uri);
-    if (!supported) {
-      Alert.alert('Não foi possível abrir', 'Este dispositivo não possui um aplicativo para visualizar esse anexo.');
-      return;
-    }
-
-    try {
-      await Linking.openURL(attachment.uri);
-    } catch {
-      Alert.alert('Não foi possível abrir', 'O anexo não pôde ser aberto neste momento. Tente novamente.');
+  function handleOpenReceipt() {
+    if (receipt ?? existingReceipt) {
+      setAttachmentPreviewVisible(true);
     }
   }
 
@@ -430,7 +421,7 @@ export function NewTransactionScreen() {
             onPickDocument={handlePickDocument}
             onPickImage={handlePickReceipt}
             onRemove={handleRemoveReceipt}
-            onView={existingReceipt ? handleOpenReceipt : undefined}
+            onView={handleOpenReceipt}
           />
 
           {!!error && <Text accessibilityLiveRegion="assertive" style={styles.error}>{error}</Text>}
@@ -443,6 +434,11 @@ export function NewTransactionScreen() {
           />
         </View>
       </View>
+      <AttachmentPreviewModal
+        attachment={receipt ?? existingReceipt}
+        onClose={() => setAttachmentPreviewVisible(false)}
+        visible={attachmentPreviewVisible}
+      />
     </ScrollView>
   );
 }

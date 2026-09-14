@@ -38,42 +38,44 @@ export function AttachmentUploader({ label, attachment, onPickImage, onPickDocum
           </View>
         </View>
       ) : (
-        <View style={styles.previewRow}>
-          {isPdf ? (
-            <View accessibilityLabel="Documento PDF anexado" style={styles.documentPreview}>
-              <FileText color={colors.primary} size={28} />
+        <View style={styles.previewCard}>
+          <Pressable
+            accessibilityLabel={onView ? 'Abrir recibo anexado' : undefined}
+            disabled={!onView}
+            onPress={onView}
+            style={({ pressed }) => [styles.previewSummary, pressed && styles.pressed]}
+          >
+            {isPdf ? (
+              <View accessibilityLabel="Documento PDF anexado" style={styles.documentPreview}>
+                <FileText color={colors.primary} size={28} />
+              </View>
+            ) : (
+              <Image accessibilityLabel="Prévia do recibo anexado" source={{ uri: attachment.uri }} style={styles.preview} />
+            )}
+            <View style={styles.previewDetails}>
+              <View style={styles.previewHeading}>
+                {isPdf ? <FileText color={colors.primary} size={17} /> : <FileImage color={colors.primary} size={17} />}
+                <Text numberOfLines={1} style={styles.previewTitle}>{attachment.name}</Text>
+              </View>
+              <Text style={styles.previewCaption}>
+                Toque para visualizar antes de salvar ou alterar o anexo.
+              </Text>
             </View>
-          ) : (
-            <Image accessibilityLabel="Prévia do recibo anexado" source={{ uri: attachment.uri }} style={styles.preview} />
-          )}
-          <View style={styles.previewDetails}>
-            <View style={styles.previewHeading}>
-              {isPdf ? <FileText color={colors.primary} size={17} /> : <FileImage color={colors.primary} size={17} />}
-              <Text numberOfLines={1} style={styles.previewTitle}>{attachment.name}</Text>
-            </View>
-            <Text style={styles.previewCaption}>
-              {isPdf ? 'O documento será salvo com esta movimentação.' : 'A imagem será salva com esta movimentação.'}
-            </Text>
-            <View style={styles.previewActions}>
-              {onView && (
-                <Pressable accessibilityLabel="Abrir recibo anexado" onPress={onView} style={styles.actionButton}>
-                  <ExternalLink color={colors.primaryDark} size={14} />
-                  <Text style={styles.changeAttachment}>Abrir</Text>
-                </Pressable>
-              )}
-              <Pressable accessibilityLabel="Trocar por imagem" onPress={onPickImage} style={styles.actionButton}>
-                <RefreshCw color={colors.primaryDark} size={14} />
-                <Text style={styles.changeAttachment}>Imagem</Text>
-              </Pressable>
-              <Pressable accessibilityLabel="Trocar por documento PDF" onPress={onPickDocument} style={styles.actionButton}>
-                <RefreshCw color={colors.primaryDark} size={14} />
-                <Text style={styles.changeAttachment}>PDF</Text>
-              </Pressable>
-              <Pressable accessibilityLabel="Remover recibo" onPress={onRemove} style={styles.actionButton}>
-                <Trash2 color={colors.danger} size={14} />
-                <Text style={styles.removeAttachment}>Remover</Text>
-              </Pressable>
-            </View>
+            {onView && <ExternalLink color={colors.primaryDark} size={18} />}
+          </Pressable>
+          <View style={styles.previewActions}>
+            <Pressable accessibilityLabel="Trocar por imagem" onPress={onPickImage} style={styles.actionButton}>
+              <RefreshCw color={colors.primaryDark} size={14} />
+              <Text style={styles.changeAttachment}>Trocar imagem</Text>
+            </Pressable>
+            <Pressable accessibilityLabel="Trocar por documento PDF" onPress={onPickDocument} style={styles.actionButton}>
+              <RefreshCw color={colors.primaryDark} size={14} />
+              <Text style={styles.changeAttachment}>Trocar PDF</Text>
+            </Pressable>
+            <Pressable accessibilityLabel="Remover recibo" onPress={onRemove} style={[styles.actionButton, styles.removeButton]}>
+              <Trash2 color={colors.danger} size={14} />
+              <Text style={styles.removeAttachment}>Remover</Text>
+            </Pressable>
           </View>
         </View>
       )}
@@ -114,15 +116,30 @@ const styles = StyleSheet.create({
   chooseActions: { alignItems: 'flex-end', gap: spacing.xs },
   chooseText: { color: colors.primaryDark, fontSize: 13, fontWeight: '700' },
   uploadText: { color: colors.primaryDark, fontSize: 14, fontWeight: '700' },
-  previewRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.sm, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface },
-  preview: { width: 78, height: 78, borderRadius: radius.sm, backgroundColor: colors.border },
-  documentPreview: { width: 78, height: 78, borderRadius: radius.sm, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  previewCard: { padding: spacing.sm, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface },
+  previewSummary: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minWidth: 0 },
+  preview: { width: 64, height: 64, borderRadius: radius.sm, backgroundColor: colors.border },
+  documentPreview: { width: 64, height: 64, borderRadius: radius.sm, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
   previewDetails: { flex: 1, minWidth: 0, gap: spacing.xs },
   previewHeading: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   previewTitle: { color: colors.text, fontSize: 14, fontWeight: '700' },
   previewCaption: { color: colors.textMuted, fontSize: 12 },
-  previewActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xs },
-  actionButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.xs },
+  previewActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
+  actionButton: {
+    minWidth: 112,
+    flexGrow: 1,
+    flexBasis: '30%',
+    minHeight: 38,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.sm,
+    backgroundColor: colors.primarySoft,
+  },
+  removeButton: { backgroundColor: '#FDECEE' },
   changeAttachment: { color: colors.primaryDark, fontSize: 12, fontWeight: '700' },
   removeAttachment: { color: colors.danger, fontSize: 12, fontWeight: '600' },
   pressed: { opacity: 0.72 },

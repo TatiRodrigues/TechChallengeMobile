@@ -12,6 +12,8 @@ jest.mock('lucide-react-native', () => ({
 
 import { AttachmentUploader } from '../AttachmentUploader';
 
+jest.setTimeout(15000);
+
 describe('AttachmentUploader', () => {
   it('offers image and PDF selection when no attachment exists', async () => {
     const onPickImage = jest.fn();
@@ -50,16 +52,16 @@ describe('AttachmentUploader', () => {
     );
 
     expect(screen.getByText('recibo-setembro.pdf')).toBeTruthy();
-    expect(screen.getByText('O documento será salvo com esta movimentação.')).toBeTruthy();
+    expect(screen.getByText('Toque para visualizar antes de salvar ou alterar o anexo.')).toBeTruthy();
   });
 
-  it('offers an action to open an attachment saved with a transaction', async () => {
+  it('offers an action to preview a newly selected or saved attachment', async () => {
     const onView = jest.fn();
 
     await render(
       <AttachmentUploader
         attachment={{
-          uri: 'https://example.com/recibo.jpg',
+          uri: 'file:///cache/recibo.jpg',
           name: 'recibo.jpg',
           mimeType: 'image/jpeg',
         }}

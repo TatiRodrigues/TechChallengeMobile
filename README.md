@@ -19,7 +19,7 @@ O usuário pode acompanhar entradas e saídas, consultar o histórico, cadastrar
 | Histórico | Busca por descrição, filtros combinados e paginação de 20 transações via Cloud Firestore |
 | Movimentações | Criação, edição e exclusão com confirmação |
 | Formulário | Validação de descrição, valor positivo, data e categoria; rascunho local na criação |
-| Anexos | Seleção de JPG/PNG ou PDF, prévia/indicador, troca, remoção do vínculo e upload para o Storage |
+| Anexos | Seleção de JPG/PNG ou PDF, visualização interna antes/depois de salvar, troca, remoção do vínculo e upload para o Storage |
 | Interface | Tokens de tema, componentes reutilizáveis e layouts adaptados à largura da tela |
 
 ### Regras financeiras
@@ -45,6 +45,7 @@ Versões declaradas nos manifestos; consulte os arquivos de lock para a resoluç
 | Firebase | `^12.18.0` | Authentication, Firestore e Storage |
 | AsyncStorage | `2.2.0` | Persistência da sessão Auth e rascunho |
 | React Native Web | `^0.21.2` | Renderização no navegador |
+| React Native WebView | `13.16.1` | Visualização interna de PDFs em Android/iOS |
 | Lucide React Native | `^1.37.0` | Ícones |
 | Docusaurus | `3.10.2` | Site da documentação |
 
@@ -243,7 +244,8 @@ Imagens JPG/PNG e documentos PDF são enviados para `receipts/{uid}/{timestamp}-
 
 - Na **criação**, uma falha no upload permite salvar a transação sem imagem, com aviso ao usuário.
 - Na **edição**, a falha no novo upload interrompe a atualização do documento.
-- Depois de salvo, o botão **Abrir** mostra a imagem ou o PDF no visualizador disponível no dispositivo.
+- Antes ou depois de salvar, tocar no anexo abre uma visualização dentro do aplicativo. Imagens usam o componente nativo e PDFs usam PDF.js em uma WebView no Android/iOS ou um `iframe` na Web.
+- A visualização de PDF em Android/iOS precisa de conexão para carregar o PDF.js; o arquivo continua limitado a 2 MB.
 - Remover o vínculo ou excluir uma transação **não apaga automaticamente o arquivo no Storage**.
 
 Detalhes em [Firebase e dados](./docs/docs/firebase-e-dados.md).
