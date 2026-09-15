@@ -67,9 +67,12 @@ export function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
     setIsBiometricLoading(true);
 
     try {
+      // success=false aqui significa apenas que o usuário cancelou o prompt do sistema;
+      // qualquer outra falha (senha desatualizada, biometria não reconhecida etc.) já vem
+      // como exceção com uma mensagem específica, tratada abaixo.
       const success = await loginWithBiometrics();
       if (!success) {
-        setError('Não foi possível confirmar sua identidade. Entre com e-mail e senha.');
+        setError('Login por biometria cancelado. Entre com e-mail e senha.');
       }
     } catch (biometricError) {
       setError(biometricError instanceof Error ? biometricError.message : 'Não foi possível entrar.');

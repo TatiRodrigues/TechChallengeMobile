@@ -190,8 +190,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
       return false;
     }
 
-    await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
-    return true;
+    try {
+      await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+      return true;
+    } catch (error) {
+      // A senha salva não bate mais com o Firebase (ex.: senha alterada em outro dispositivo).
+      // Limpa a credencial para não repetir o mesmo erro indefinidamente.
+      await clearSavedCredentials();
+      setBiometricLoginAvailable(false);
+      console.warn('Saved biometric credentials rejected by Firebase:', error);
+      throw new Error('Suas credenciais salvas estão desatualizadas. Entre com e-mail e senha para atualizar.');
+    }
   }
 
   // Usado quando o app abre com uma sessão do Firebase já persistida: apenas confirma a

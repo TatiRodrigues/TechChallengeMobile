@@ -51,6 +51,32 @@ export async function clearSavedCredentials(): Promise<void> {
   await SecureStore.deleteItemAsync(CREDENTIALS_KEY);
 }
 
+// Motivos de cancelamento intencional pelo usuário/sistema: não devem virar mensagem de erro.
+const SILENT_CANCEL_REASONS = new Set(['user_cancel', 'system_cancel', 'app_cancel']);
+
+// Traduz o código de erro nativo do expo-local-authentication para uma mensagem legível,
+// já que result.success=false sozinho não diz por que a autenticação falhou.
+function describeAuthenticationError(errorCode: string | undefined): string {
+  switch (errorCode) {
+    case 'lockout':
+      return 'Muitas tentativas incorretas. Aguarde alguns instantes e tente novamente, ou use e-mail e senha.';
+    case 'lockout_permanent':
+      return 'A biometria foi bloqueada por excesso de tentativas. Desbloqueie o aparelho manualmente e tente novamente.';
+    case 'not_enrolled':
+      return 'Nenhuma biometria ou PIN cadastrado neste aparelho. Configure a segurança do dispositivo e tente novamente.';
+    case 'not_available':
+      return 'A autenticação do dispositivo não está disponível agora.';
+    case 'no_space':
+      return 'Não foi possível concluir a autenticação por falta de espaço no dispositivo.';
+    case 'authentication_failed':
+      return 'A digital, o padrão ou o rosto não foi reconhecido. Tente novamente.';
+    default:
+      return errorCode
+        ? `Não foi possível confirmar sua identidade (${errorCode}).`
+        : 'Não foi possível confirmar sua identidade.';
+  }
+}
+
 export async function unlockWithDeviceCredentials(): Promise<boolean> {
   if (Platform.OS === 'web') return false;
 
@@ -60,7 +86,16 @@ export async function unlockWithDeviceCredentials(): Promise<boolean> {
     disableDeviceFallback: false,
   });
 
-  return result.success;
+  if (!result.success) {
+    if (SILENT_CANCEL_REASONS.has(result.error)) {
+      return false;
+    }
+
+    console.warn('Biometric unlock failed:', result.error);
+    throw new Error(describeAuthenticationError(result.error));
+  }
+
+  return true;
 }
 
 export async function authenticateWithBiometrics(): Promise<StoredCredentials | null> {
@@ -73,16 +108,29 @@ export async function authenticateWithBiometrics(): Promise<StoredCredentials | 
   });
 
   if (!result.success) {
-    return null;
+    if (SILENT_CANCEL_REASONS.has(result.error)) {
+      return null;
+    }
+
+    console.warn('Biometric login failed:', result.error);
+    throw new Error(describeAuthenticationError(result.error));
   }
 
   const isAvailable = await SecureStore.isAvailableAsync().catch(() => false);
-  if (!isAvailable) return null;
+  if (!isAvailable) {
+    throw new Error('O armazenamento seguro deste dispositivo não está disponível. Entre com e-mail e senha.');
+  }
 
   const stored = await SecureStore.getItemAsync(CREDENTIALS_KEY);
   if (!stored) {
-    return null;
+    throw new Error('Nenhuma credencial salva neste dispositivo. Entre com e-mail e senha e mantenha "Lembrar de mim" marcado.');
   }
 
-  return JSON.parse(stored) as StoredCredentials;
+  try {
+    return JSON.parse(stored) as StoredCredentials;
+  } catch {
+    // Dado corrompido no armazenamento seguro: remove para não repetir o mesmo erro sempre.
+    await SecureStore.deleteItemAsync(CREDENTIALS_KEY).catch(() => {});
+    throw new Error('As credenciais salvas estavam corrompidas e foram removidas. Entre novamente com e-mail e senha.');
+  }
 }

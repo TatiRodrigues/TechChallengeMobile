@@ -20,10 +20,14 @@ export function AppLockScreen() {
     setIsLoading(true);
 
     try {
+      // unlocked=false aqui significa apenas que o usuário cancelou o prompt do sistema;
+      // qualquer outra falha já vem como exceção com uma mensagem específica, tratada abaixo.
       const unlocked = await unlockApp();
       if (!unlocked) {
-        setError('Não foi possível confirmar sua identidade. Tente novamente.');
+        setError('Confirmação cancelada. Toque em "Desbloquear" para tentar novamente.');
       }
+    } catch (unlockError) {
+      setError(unlockError instanceof Error ? unlockError.message : 'Não foi possível confirmar sua identidade.');
     } finally {
       setIsLoading(false);
     }
