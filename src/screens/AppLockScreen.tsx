@@ -1,5 +1,5 @@
 import { Fingerprint } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -28,11 +28,6 @@ export function AppLockScreen() {
       setIsLoading(false);
     }
   }
-
-  useEffect(() => {
-    handleUnlock();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>

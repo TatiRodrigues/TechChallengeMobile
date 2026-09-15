@@ -1,5 +1,5 @@
 import { Check, Eye, EyeOff, Fingerprint, LockKeyhole, Mail } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ImageBackground,
   Alert,
@@ -34,7 +34,6 @@ export function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
-  const [triedBiometricAutoLogin, setTriedBiometricAutoLogin] = useState(false);
   const [rememberDevice, setRememberDevice] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -96,17 +95,10 @@ export function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
     }
   }
 
-  // Oferece o desbloqueio biométrico automaticamente assim que a tela abre, caso disponível,
-  // para que o usuário não precise digitar e-mail e senha se não quiser.
-  useEffect(() => {
-    if (biometricLoginAvailable && !triedBiometricAutoLogin) {
-      setTriedBiometricAutoLogin(true);
-      handleBiometricLogin();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [biometricLoginAvailable]);
+  // Biometria disponivel apenas via botao para nao acionar o prompt do sistema automaticamente
+  // (no Android o prompt biometrico bloqueia gravacao de tela).
 
-  return (
+return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboardView}>
         <View style={[styles.layout, isWide && styles.layoutWide]}>
